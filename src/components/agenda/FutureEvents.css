@@ -1,0 +1,60 @@
+.future-events-container {
+    width: auto;  /* Cambia a auto para que no trate de expandirse */
+    max-width: 100%;  /* Mantiene un máximo de 100% */
+    margin: 20px auto;  /* Centra la tabla horizontalmente */
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: table;  /* Esto ayudará a que el contenedor se ajuste al tamaño de la tabla */
+}
+
+.future-events-table {
+    border-collapse: collapse;
+    table-layout: fixed;  /* Cambia a fixed para controlar mejor el ancho de las columnas */
+    width: auto;  /* Ajusta automáticamente el ancho según el contenido */
+}
+
+.future-events-table th, .future-events-table td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+}
+
+/* Ajusta el ancho de las columnas específicamente */
+.future-events-table th:nth-child(1), .future-events-table td:nth-child(1) { width: 20%; }
+.future-events-table th:nth-child(2), .future-events-table td:nth-child(2) { width: 20%; }
+.future-events-table th:nth-child(3), .future-events-table td:nth-child(3) { width: 40%; }
+.future-events-table th:nth-child(4), .future-events-table td:nth-child(4) { width: 20%; }
+
+.future-events-table th {
+    background-color: #eee;
+}
+
+.future-events-table tr:last-child td {
+    border-bottom: none;
+}
+
+.future-events-table button {
+    margin-right: 5px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.future-events-table button.edit {
+    background-color: #ffeb3b;  /* Amarillo para el botón Editar */
+}
+
+.future-events-table button.delete {
+    background-color: #f44336;  /* Rojo para el botón Eliminar */
+}
+
+.future-events-table button:hover {
+    opacity: 0.8;
+}
+.future-events-table button:last-child {
+    margin-right: 0;  /* Elimina el margen derecho del último botón en cada celda */
+}

@@ -1,0 +1,15 @@
+.button-class button {
+    padding: 15px 30px; /* Adjust padding to increase button size */
+    font-size: 16px; /* Larger font size for better readability */
+    background-color: #007bff; /* Primary blue color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%; /* Full width for better touch area */
+    box-sizing: border-box;
+  }
+  
+  .button-class button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+  }
