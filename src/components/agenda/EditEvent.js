@@ -2,22 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import './EditEvent.css';
 
+
 const EditEvent = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const { state } = useLocation();
     const event = state.event;
 
+    const [responseMessage, setResponseMessage] = useState('');
+
     const [formData, setFormData] = useState({
-        payerName: event.name || '',
+        name: event.name || '',
         clientReason: event.clientReason || '',
-        eventType: event.eventType || '',
-        eventDate: event.eventDate || '',
+        id_event: event.id_event || '',
+        type: event.type || '',
+        eventDate: new Date(event.year, event.month, event.day).toISOString().split('T')[0] || '',
         food: event.food || '',
+        cost: event.cost || '',
         location: event.location || '',
-        attendees: event.attendees || '',
-        price: event.price || '',
-        advancePayment: event.advancePayment || ''
+        num_of_people: event.num_of_people || '',
+        upfront: event.upfront || ''
     });
 
     const handleChange = (e) => {
@@ -30,18 +34,27 @@ const EditEvent = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        fetch(`http://localhost:8000/agenda/modifyEvento/${id}`, {
+        const allFormData = {...formData,
+            day: Number.parseInt(formData.eventDate.split('-')[2]),
+            month: Number.parseInt(formData.eventDate.split('-')[1]),
+            year: Number.parseInt(formData.eventDate.split('-')[0]),}
+
+        delete allFormData.eventDate; 
+        delete allFormData.clientReason;
+        delete allFormData.food;
+        fetch(`http://localhost:8000/agenda/modifyEvento`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(formData)
+            body: JSON.stringify(allFormData)
         })
         .then(response => response.json())
-        .then(() => {
-            navigate('/future-events');
+        .then(data => {
+            setResponseMessage(data.message); // Set the response message
+            //navigate('/future-events');
         })
-        .catch(error => console.error('Error updating event:', error));
+        .catch(error => console.error('Error updating event:', error), response => response.json());
     };
 
     return (
@@ -49,7 +62,7 @@ const EditEvent = () => {
             <form onSubmit={handleSubmit}>
                 <label>
                     Nombre (responsables de pago)
-                    <input type="text" name="payerName" value={formData.payerName} onChange={handleChange} />
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} />
                 </label>
                 <label>
                     Clientes (razón de evento)
@@ -57,7 +70,7 @@ const EditEvent = () => {
                 </label>
                 <label>
                     Tipo de evento
-                    <select name="eventType" value={formData.eventType} onChange={handleChange}>
+                    <select name="type" value={formData.type} onChange={handleChange}>
                         <option value="conference">Conferencia</option>
                         <option value="seminar">Seminario</option>
                         <option value="workshop">Taller</option>
@@ -77,18 +90,26 @@ const EditEvent = () => {
                 </label>
                 <label>
                     No. Asistentes
-                    <input type="number" name="attendees" value={formData.attendees} onChange={handleChange} />
+                    <input type="number" name="num_of_people" value={formData.num_of_people} onChange={handleChange} />
                 </label>
                 <label>
                     Precio del evento
-                    <input type="number" name="price" value={formData.price} onChange={handleChange} />
+                    <input type="number" name="cost" value={formData.cost} onChange={handleChange} />
                 </label>
                 <label>
                     Anticipo del evento
-                    <input type="number" name="advancePayment" value={formData.advancePayment} onChange={handleChange} />
+                    <input type="number" name="upfront" value={formData.upfront} onChange={handleChange} />
                 </label>
                 <button type="submit" className="submit-button">Actualizar Evento</button>
             </form>
+            {responseMessage && ( // Render popup if responseMessage is not empty
+                <div className="popup-overlay">
+                    <div className="popup-content">
+                        <p>{responseMessage}</p>
+                        <button onClick={() => setResponseMessage('')}>Cerrar</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

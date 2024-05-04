@@ -14,6 +14,8 @@ const CreateEvent = () => {
     advancePayment: ''
   });
 
+  const [responseMessage, setResponseMessage] = useState('');
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
@@ -42,7 +44,12 @@ const CreateEvent = () => {
           cost: Number.parseFloat(formData.price) + 0.0001, // Asegrate de enviar un nmero aquí
           upfront: Number.parseFloat(formData.advancePayment) + 0.0001 // También asegrate de que el anticipo sea un nmero
       })
-    });
+      }).then(response => response.json())
+      .then(data => {
+          setResponseMessage(data.message); // Set the response message
+          //navigate('/future-events');
+      })
+      .catch(error => console.error('Error updating event:', error), response => response.json());
   };
 
   return (
@@ -90,6 +97,14 @@ const CreateEvent = () => {
         </label>
         <button type="submit" className="submit-button">Registrar Evento</button>
       </form>
+      {responseMessage && ( // Render popup if responseMessage is not empty
+                <div className="popup-overlay">
+                    <div className="popup-content">
+                        <p>{responseMessage}</p>
+                        <button onClick={() => setResponseMessage('')}>Cerrar</button>
+                    </div>
+                </div>
+            )}
     </div>
   );
 };

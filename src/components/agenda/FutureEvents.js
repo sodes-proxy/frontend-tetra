@@ -7,12 +7,13 @@ const FutureEvents = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch('http://localhost:8000/agenda/getEvento', {
-            method: 'POST',
+        fetch('http://localhost:8000/agenda/verAgenda', {
+            method: 'OPTIONS',
             headers: {
                 'Content-Type': 'application/json'
+
             },
-            body: JSON.stringify({})
+            body: JSON.stringify({'day':4, 'month': 5, 'year': 2024, isFuture: true})
         })
         .then(response => response.json())
         .then(data => {
