@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './CreateEvent.css';
 
 const CreateEvent = () => {
@@ -14,7 +14,26 @@ const CreateEvent = () => {
     advancePayment: ''
   });
 
+  const [eventTypeOptions, setEventTypeOptions] = useState([]);
+
   const [responseMessage, setResponseMessage] = useState('');
+
+  // get event types
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/getTiposEvento')
+      .then(response => response.json())
+      .then(data => {
+        if (data && data.types && Array.isArray(data.types)) {
+          // Extract the types array from the response data and set state
+          setEventTypeOptions(data.types);
+        } else {
+          console.error('Invalid data format:', data);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching event types:', error);
+      });
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -66,9 +85,9 @@ const CreateEvent = () => {
         <label>
           Tipo de evento
           <select name="eventType" value={formData.eventType} onChange={handleChange}>
-            <option value="conference">Conferencia</option>
-            <option value="seminar">Seminario</option>
-            <option value="workshop">Taller</option>
+            {eventTypeOptions.map((option, index) => (
+              <option key={index} value={option}>{option}</option>
+            ))}
           </select>
         </label>
         <label>
