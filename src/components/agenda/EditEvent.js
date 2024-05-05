@@ -16,7 +16,7 @@ const EditEvent = () => {
         clientReason: event.clientReason || '',
         id_event: event.id_event || '',
         type: event.type || '',
-        eventDate: new Date(event.year, event.month, event.day).toISOString().split('T')[0] || '',
+        eventDate: new Date(event.year, event.month - 1, event.day).toISOString().split('T')[0] || '',
         food: event.food || '',
         cost: event.cost || '',
         location: event.location || '',
