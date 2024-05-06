@@ -5,7 +5,7 @@ const CreateEvent = () => {
   const [formData, setFormData] = useState({
     payerName: '',
     clientReason: '',
-    eventType: 'conference',
+    eventType: '',
     eventDate: '',
     food: '',
     location: '',
@@ -15,7 +15,7 @@ const CreateEvent = () => {
   });
 
   const [eventTypeOptions, setEventTypeOptions] = useState([]);
-
+  const [eventLocations, setEventLocations] = useState([]);
   const [responseMessage, setResponseMessage] = useState('');
 
   // get event types
@@ -26,6 +26,23 @@ const CreateEvent = () => {
         if (data && data.types && Array.isArray(data.types)) {
           // Extract the types array from the response data and set state
           setEventTypeOptions(data.types);
+        } else {
+          console.error('Invalid data format:', data);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching event types:', error);
+      });
+  }, []);
+
+  // get locations
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/getLugares')
+      .then(response => response.json())
+      .then(data => {
+        if (data && data.locations && Array.isArray(data.locations)) {
+          // Extract the types array from the response data and set state
+          setEventLocations(data.locations);
         } else {
           console.error('Invalid data format:', data);
         }
@@ -100,7 +117,11 @@ const CreateEvent = () => {
         </label>
         <label>
           Lugar asignado para el evento
-          <input type="text" name="location" value={formData.location} onChange={handleChange} />
+          <select name="location" value={formData.location} onChange={handleChange}>
+            {eventLocations.map((option, index) => (
+              <option key={index} value={option}>{option}</option>
+            ))}
+          </select>
         </label>
         <label>
           No. Asistentes
