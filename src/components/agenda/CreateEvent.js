@@ -26,6 +26,10 @@ const CreateEvent = () => {
         if (data && data.types && Array.isArray(data.types)) {
           // Extract the types array from the response data and set state
           setEventTypeOptions(data.types);
+          setFormData(prevState => ({
+            ...prevState,
+            ['eventType']: data.types[0]
+          }));
         } else {
           console.error('Invalid data format:', data);
         }
@@ -43,12 +47,16 @@ const CreateEvent = () => {
         if (data && data.locations && Array.isArray(data.locations)) {
           // Extract the types array from the response data and set state
           setEventLocations(data.locations);
+          setFormData(prevState => ({
+            ...prevState,
+            ['location']: data.locations[0]
+          }));
         } else {
           console.error('Invalid data format:', data);
         }
       })
       .catch(error => {
-        console.error('Error fetching event types:', error);
+        console.error('Error fetching event locations:', error);
       });
   }, []);
 
@@ -77,8 +85,8 @@ const CreateEvent = () => {
           year: Number.parseInt(formData.eventDate.split('-')[0]),
           location: formData.location,
           num_of_people: Number.parseInt(formData.attendees),
-          cost: Number.parseFloat(formData.price) + 0.0001, // Asegrate de enviar un nmero aquí
-          upfront: Number.parseFloat(formData.advancePayment) + 0.0001 // También asegrate de que el anticipo sea un nmero
+          cost: Number.parseFloat(formData.price),
+          upfront: Number.parseFloat(formData.advancePayment) 
       })
       }).then(response => response.json())
       .then(data => {
@@ -125,15 +133,15 @@ const CreateEvent = () => {
         </label>
         <label>
           No. Asistentes
-          <input type="number" name="attendees" value={formData.attendees} onChange={handleChange} placeholder='Número de asistentes'/>
+          <input type="number" min={1} name="attendees" value={formData.attendees} onChange={handleChange} placeholder='Número de asistentes'/>
         </label>
         <label>
           Precio del evento
-          <input type="number" step="any" name="price" value={formData.price} onChange={handleChange} placeholder='Precio $'/>
+          <input type="number" min={0} step="1000" name="price" value={formData.price} onChange={handleChange} placeholder='Precio $'/>
         </label>
         <label>
           Anticipo del evento
-          <input type="number" step="any" name="advancePayment" value={formData.advancePayment} onChange={handleChange} placeholder='Anticipo $' />
+          <input type="number" min={0} step="1000" name="advancePayment" value={formData.advancePayment} onChange={handleChange} placeholder='Anticipo $' />
         </label>
         <button type="submit" className="submit-button">Registrar Evento</button>
       </form>
