@@ -9,6 +9,8 @@ const EditEvent = () => {
     const { state } = useLocation();
     const event = state.event;
 
+    const [eventTypeOptions, setEventTypeOptions] = useState([]);
+    const [eventLocations, setEventLocations] = useState([]);
     const [responseMessage, setResponseMessage] = useState('');
 
     const [formData, setFormData] = useState({
@@ -23,6 +25,39 @@ const EditEvent = () => {
         num_of_people: event.num_of_people || '',
         upfront: event.upfront || ''
     });
+
+    useEffect(() => {
+        fetch('http://127.0.0.1:8000/getLugares')
+          .then(response => response.json())
+          .then(data => {
+            if (data && data.locations && Array.isArray(data.locations)) {
+              // Extract the types array from the response data and set state
+              setEventLocations(data.locations);
+            } else {
+              console.error('Invalid data format:', data);
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching event locations:', error);
+          });
+      }, []);
+
+      useEffect(() => {
+        fetch('http://127.0.0.1:8000/getTiposEvento')
+          .then(response => response.json())
+          .then(data => {
+            if (data && data.types && Array.isArray(data.types)) {
+              // Extract the types array from the response data and set state
+              setEventTypeOptions(data.types);
+              
+            } else {
+              console.error('Invalid data format:', data);
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching event types:', error);
+          });
+      }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -71,9 +106,9 @@ const EditEvent = () => {
                 <label>
                     Tipo de evento
                     <select name="type" value={formData.type} onChange={handleChange}>
-                        <option value="conference">Conferencia</option>
-                        <option value="seminar">Seminario</option>
-                        <option value="workshop">Taller</option>
+                        {eventTypeOptions.map((option, index) => (
+                        <option key={index} value={option}>{option}</option>
+                        ))}
                     </select>
                 </label>
                 <label>
@@ -86,7 +121,11 @@ const EditEvent = () => {
                 </label>
                 <label>
                     Lugar asignado para el evento
-                    <input type="text" name="location" value={formData.location} onChange={handleChange} />
+                    <select name="location" value={formData.location} onChange={handleChange}>
+                        {eventLocations.map((option, index) => (
+                        <option key={index} value={option}>{option}</option>
+                        ))}
+                    </select>
                 </label>
                 <label>
                     No. Asistentes

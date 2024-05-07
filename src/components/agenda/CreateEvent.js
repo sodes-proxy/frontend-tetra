@@ -85,8 +85,8 @@ const CreateEvent = () => {
           year: Number.parseInt(formData.eventDate.split('-')[0]),
           location: formData.location,
           num_of_people: Number.parseInt(formData.attendees),
-          cost: Number.parseFloat(formData.price),
-          upfront: Number.parseFloat(formData.advancePayment) 
+          cost: Number.parseInt(formData.price),
+          upfront: Number.parseInt(formData.advancePayment) 
       })
       }).then(response => response.json())
       .then(data => {
