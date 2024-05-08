@@ -16,7 +16,7 @@ const AddPayment = () => {
     const [formData, setFormData] = useState({
         id_event: event.id_event || '',
         payer: event.payer || '',
-        quantity: event.quantity || 100
+        quantity: event.quantity || 100.0
     });
 
 
@@ -32,16 +32,21 @@ const AddPayment = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         // Check if any of the form fields are empty
-        if (!formData.payer.trim() || !formData.quantity.trim()) {
+        if (!formData.payer.trim() || !formData.quantity.toString().trim()) {
             alert('Por favor llena los campos'); // You can replace this with your preferred way of displaying errors
             return;
         }
+
         fetch(`http://localhost:8000/finanzas/addAbono`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(formData)
+            body: JSON.stringify({
+                'quantity': Number.parseFloat(formData.quantity),
+                'payer': formData.payer,
+                'id_event': formData.id_event
+            })
         })
         .then(response => response.json())
         .then(data => {
@@ -63,7 +68,7 @@ const AddPayment = () => {
             </label>
             <label>
                 La cantidad de
-                <input type="number" min={0} name="quantity" value={formData.quantity} onChange={handleChange} />
+                <input type="number" min={1} step={0.10} name="quantity" value={formData.quantity} onChange={handleChange} />
             </label>
 
 

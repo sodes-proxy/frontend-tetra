@@ -44,15 +44,15 @@
     margin-top: 10px;
 }
 
-.future-events-table button.edit {
+table button.edit {
     background-color: #ffeb3b;  /* Amarillo para el botón Editar */
 }
 
-.future-events-table button.delete {
+table button.delete {
     background-color: #f44336;  /* Rojo para el botón Eliminar */
 }
 
-.future-events-table button.payment {
+table button.payment {
     background-color: #119ABB;  /* Azul para el botón Abono */
     
 }

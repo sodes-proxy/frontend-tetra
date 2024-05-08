@@ -7,7 +7,7 @@ import FutureEvents from './components/agenda/FutureEvents';
 import EditEvent from './components/agenda/EditEvent';
 import BackToHomeButton from './components/BackToHomeButton';
 import PastEvents from './components/agenda/PastEvents';
-import AddPayment from './components/finanzas/addPayment';
+import AddPayment from './components/finanzas/AddPayment';
 import ViewEvent from './components/agenda/ViewEvent';
 
 const App = () => {
