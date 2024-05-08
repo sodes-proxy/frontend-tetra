@@ -15,11 +15,9 @@ const EditEvent = () => {
 
     const [formData, setFormData] = useState({
         name: event.name || '',
-        clientReason: event.clientReason || '',
         id_event: event.id_event || '',
         type: event.type || '',
         eventDate: new Date(event.year, event.month - 1, event.day).toISOString().split('T')[0] || '',
-        food: event.food || '',
         cost: event.cost || '',
         location: event.location || '',
         num_of_people: event.num_of_people || '',
@@ -69,14 +67,20 @@ const EditEvent = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        // Check if any of the form fields are empty
+        for (const key in formData) {
+            if (!formData[key].trim()) {
+                alert('Por favor llena todos los campos'); // You can replace this with your preferred way of displaying errors
+                return;
+            }
+        }
+        
         const allFormData = {...formData,
             day: Number.parseInt(formData.eventDate.split('-')[2]),
             month: Number.parseInt(formData.eventDate.split('-')[1]),
             year: Number.parseInt(formData.eventDate.split('-')[0]),}
 
         delete allFormData.eventDate; 
-        delete allFormData.clientReason;
-        delete allFormData.food;
         fetch(`http://localhost:8000/agenda/modifyEvento`, {
             method: 'PUT',
             headers: {

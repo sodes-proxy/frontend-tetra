@@ -10,9 +10,9 @@ const FutureEvents = () => {
     const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
     const date = new Date();
 
-      const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - 4 + i);
+    const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - 4 + i);
 
-      const getEvents = (data) => {
+    const getEvents = (data) => {
         fetch('http://localhost:8000/agenda/getEvento', {
             method: 'OPTIONS',
             headers: {
@@ -32,7 +32,7 @@ const FutureEvents = () => {
             }
         })
         .catch(error => console.error('Error fetching events:', error));
-}
+    }
 
     const [isChecked, setIsChecked] = useState(false);
       // Function to handle checkbox change
@@ -88,6 +88,10 @@ const FutureEvents = () => {
 
     const handleEdit = (event) => {
         navigate(`/editar-evento/${event.id_event}`, { state: { event } });
+    };
+
+    const handleEventWatch = (event) => {
+        navigate(`/ver-evento/${event.id_event}`, { state: { event } });
     };
     
     const handleDelete = (id) => {
@@ -156,6 +160,7 @@ const FutureEvents = () => {
                                 <td>{`${event.day}/${event.month}/${event.year}`}</td>
                                 <td>{event.location}</td>
                                 <td>
+                                <button className="payment" onClick={() => handleEventWatch(event)}>Ver</button>
                                     <button className="edit" onClick={() => handleEdit(event)}>Editar</button>              
                                     <button className="delete" onClick={() => handleDelete(event.id_event)}>Eliminar</button>
                                 </td>

@@ -4,10 +4,8 @@ import './CreateEvent.css';
 const CreateEvent = () => {
   const [formData, setFormData] = useState({
     payerName: '',
-    clientReason: '',
     eventType: '',
     eventDate: '',
-    food: '',
     location: '',
     attendees: '',
     price: '',
@@ -70,6 +68,12 @@ const CreateEvent = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    for (const key in formData) {
+      if (!formData[key].trim()) {
+          alert('Por favor llena todos los campos'); // You can replace this with your preferred way of displaying errors
+          return;
+      }
+  }
     console.log('Form Data Submitted:', formData);
     // Asegrate de que el coste siempre tenga dos decimales y sea un nmero
     fetch('http://localhost:8000/agenda/addEvento', {
