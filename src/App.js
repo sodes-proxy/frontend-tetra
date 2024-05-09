@@ -11,6 +11,7 @@ import AddPayment from './components/finanzas/AddPayment';
 import ViewEvent from './components/agenda/ViewEvent';
 import Login from './components/auth/Login';
 import RequireAuth from './components/auth/RequireAuth';
+import AddExpense from './components/finanzas/AddExpense';
 
 const App = () => {
   return (
@@ -38,6 +39,7 @@ const RouterContent = () => {
         <Route path='/agregar-abono/:id' element={<RequireAuth><AddPayment /></RequireAuth>} />
         <Route path='/ver-evento/:id' element={<RequireAuth><ViewEvent /></RequireAuth>} />
         <Route path="/login" element={<Login />} />
+        <Route path='/agregar-gasto/:id' element={<AddExpense />} />
       </Routes>
     </>
   );

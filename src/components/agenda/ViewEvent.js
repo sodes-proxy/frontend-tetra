@@ -111,11 +111,17 @@ const ViewEvent = () => {
     useEffect(() => {if (idTicket !== '')setModalIsOpen(true); },[idTicket]);
 
     const handleNewPayment = () => {navigate(`/agregar-abono/${id}`, { state: { event } });};
+    const handleNewExpense = () => {navigate(`/agregar-gasto/${id}`, { state: { event } });};
+
+    const cancelDelete =  () => {
+        setIdTicket('');
+        setModalIsOpen(false);
+    }
 
     return (
         <div>
-            <DeleteModal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} onDelete={handleDeletePayment} />
-            <div className="edit-event-container">
+            <DeleteModal isOpen={modalIsOpen} onRequestClose={cancelDelete} onDelete={handleDeletePayment} />
+            <div className="view-event-container">
             <fieldset onChange={handleChange}>
             <legend>Seleccion que quiere ver</legend>
             <div>
@@ -133,12 +139,13 @@ const ViewEvent = () => {
                 <label htmlFor="event">Datos</label>
             </div>
             </fieldset>
-            <div>
+            <div className='table-wrapper'>
             <table className="future-events-table">
             {viewType === 'payment' && (
                 <React.Fragment>
                      <thead>
                      <tr>
+                        <th>Ticket ID</th>
                         <th>Pago de</th>
                         <th>Fecha</th>
                         <th>Cantidad</th>
@@ -151,6 +158,7 @@ const ViewEvent = () => {
                     ) : (
                         payments.map(payment => (
                             <tr key={payment.id_ticket}>
+                                <td>{payment.id_ticket}</td>
                                 <td>{payment.payer}</td>
                                 <td>{payment.day}/{payment.month}/{payment.year}</td>
                                 <td>${payment.quantity.toLocaleString()}</td>
@@ -158,16 +166,49 @@ const ViewEvent = () => {
                             </tr>
                         ))
                     )}
-                <tr className='tr-button'>
-                    <td className="td-button">
+                <tr >
+                    <td >
                     <button className="payment" onClick={() => handleNewPayment()}>Agregar abono</button>
                     </td>   
                 </tr>       
                 </tbody>
                 </React.Fragment>
             )}
-                {viewType === 'expenses' && (<div>No hay gastos registrados para este evento</div>)}
-                {expenses && (<></>)}
+                {viewType === 'expenses' && (<React.Fragment>
+                     <thead>
+                     <tr>
+                        <th>Ticket ID</th>
+                        <th>Fecha</th>
+                        <th>Categoria</th>
+                        <th>Concepto</th>
+                        <th>Comprador</th>
+                        <th>Cantidad</th>
+                        <th>Costo</th>
+                    </tr>
+                     </thead>
+                     <tbody>
+                    {payments.length === 0 ? (
+                        <tr><td colSpan="4">No hay abonos registrados para el evento.</td></tr>
+                    ) : (
+                        expenses.map(expenses => (
+                            <tr key={expenses.id_expense}>
+                                <td>{expenses.id_expense}</td>          
+                                <td>{expenses.day}/{expenses.month}/{expenses.year}</td>
+                                <td>{expenses.category}</td>
+                                <td>{expenses.concept}</td>
+                                <td>{expenses.buyer}</td>
+                                <td>{expenses.portion.toLocaleString()}</td>
+                                <td>${expenses.amount.toLocaleString()}</td>
+                            </tr>
+                        ))
+                    )}
+                <tr >
+                    <td >
+                    <button className="payment" onClick={() => handleNewExpense()}>Agregar gasto</button>
+                    </td>   
+                </tr>       
+                </tbody>
+                </React.Fragment>)}
             </table>
             </div>
         </div>
