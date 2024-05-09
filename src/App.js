@@ -9,6 +9,7 @@ import BackToHomeButton from './components/BackToHomeButton';
 import PastEvents from './components/agenda/PastEvents';
 import AddPayment from './components/finanzas/AddPayment';
 import ViewEvent from './components/agenda/ViewEvent';
+import AddExpense from './components/finanzas/AddExpense';
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
         <Route path="/historial-eventos" element={<PastEvents />} />
         <Route path='/agregar-abono/:id' element={<AddPayment />} />
         <Route path='/ver-evento/:id' element={<ViewEvent />} />
+        <Route path='/agregar-gasto/:id' element={<AddExpense />} />
       </Routes>
     </div>
     </Router>
