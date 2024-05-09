@@ -1,0 +1,6 @@
+.button-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Crea dos columnas */
+    grid-gap: 20px; /* Espacio entre los botones */
+    padding: 20px;
+  }

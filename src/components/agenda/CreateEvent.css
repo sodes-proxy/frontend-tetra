@@ -1,0 +1,45 @@
+.create-event-container {
+    width: 100%; /* Ajusta el ancho según el contenedor padre o según necesidades específicas */
+    max-width: 400px; /* Máximo ancho del formulario */
+    margin: 20px auto; /* Centra el formulario en la página */
+    padding: 20px;
+    background-color: #f9f9f9; /* Color de fondo suave */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Sombra sutil */
+  }
+  
+  .create-event-container form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  label {
+    margin-bottom: 10px; /* Espacio entre etiquetas */
+    font-size: 14px; /* Tamaño de fuente para las etiquetas */
+  }
+  
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  select {
+    width: 100%; /* Ancho completo para aprovechar el espacio */
+    padding: 8px; /* Padding para hacer los campos más accesibles */
+    margin-top: 4px; /* Espacio entre la etiqueta y el campo */
+    border: 1px solid #ccc; /* Borde sutil */
+    border-radius: 4px; /* Bordes redondeados */
+  }
+  
+  .submit-button {
+    background-color: #4CAF50; /* Color verde para el botón de envío */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px; /* Tamaño de fuente legible */
+    margin-top: 20px; /* Espacio antes del botón de envío */
+  }
+  
+  .submit-button:hover {
+    background-color: #45a049; /* Efecto hover para el botón */
+  }
