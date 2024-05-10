@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import './FutureEvents.css';
-
+import fetchWithAuth from '../../services/fetchWithAuth';
 
 const FutureEvents = () => {
     const [events, setEvents] = useState([]);
@@ -13,15 +13,11 @@ const FutureEvents = () => {
     const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - 4 + i);
 
     const getEvents = (data) => {
-        fetch('http://localhost:8000/agenda/getEvento', {
+        fetchWithAuth('http://localhost:8000/agenda/getEvento', {
             method: 'OPTIONS',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token'),
-            },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
-        })
-        .then(response => response.json())
+        }).then(response => response.json())
         .then(data => {
             if (data.events && data.events.length > 0) {
                 setEvents(data.events);
@@ -67,11 +63,7 @@ const FutureEvents = () => {
 
      // get locations
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/getLugares', {
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('token'),
-            }
-        })
+        fetchWithAuth('http://127.0.0.1:8000/getLugares', {headers: {}})
         .then(response => response.json())
         .then(data => {
             if (data && data.locations && Array.isArray(data.locations)) {
@@ -101,12 +93,9 @@ const FutureEvents = () => {
     const handleDelete = (id) => {
         console.log('Eliminar evento:', id);
         // Implementación de la solicitud DELETE para eliminar un evento
-        fetch('http://localhost:8000/agenda/delEvento', {
+        fetchWithAuth('http://localhost:8000/agenda/delEvento', {
             method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token'),
-            },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ id_event: id }) // Asegúrate de enviar el ID del evento a eliminar
         })
         .then(response => response.json())

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './CreateEvent.css';
+import fetchWithAuth from '../../services/fetchWithAuth';
+import { getValueInNumber, extractNumericValue } from '../helpers/numbers';
 
 const CreateEvent = () => {
   const [formData, setFormData] = useState({
@@ -8,21 +10,20 @@ const CreateEvent = () => {
     eventDate: '',
     location: '',
     attendees: '',
-    price: '',
-    advancePayment: ''
+    price: '$',
+    advancePayment: '$'
   });
 
   const [eventTypeOptions, setEventTypeOptions] = useState([]);
   const [eventLocations, setEventLocations] = useState([]);
   const [responseMessage, setResponseMessage] = useState('');
 
+  const keysInSpanish = {'price':'Precio del evento', 'upfront':'Anticipo del evento'}
+  const possibleValues = ['price', 'advancePayment'];
+
   // get event types
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/getTiposEvento', {
-      'headers': {
-        'Authorization': 'Bearer ' + localStorage.getItem('token')
-      }
-    })
+    fetchWithAuth('http://127.0.0.1:8000/getTiposEvento', {'headers': {}})
       .then(response => response.json())
       .then(data => {
         if (data && data.types && Array.isArray(data.types)) {
@@ -43,12 +44,9 @@ const CreateEvent = () => {
 
   // get locations
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/getLugares', {
-      'headers': {
-        'Authorization': 'Bearer ' + localStorage.getItem('token')
-      }
-    })
-      .then(response => response.json())
+    fetchWithAuth('http://127.0.0.1:8000/getLugares', {
+      'headers': {'Authorization': 'Bearer ' + localStorage.getItem('token')}
+    }).then(response => response.json())
       .then(data => {
         if (data && data.locations && Array.isArray(data.locations)) {
           // Extract the types array from the response data and set state
@@ -74,6 +72,14 @@ const CreateEvent = () => {
     }));
   };
 
+  const handleNumberText = (event) => {
+    setFormData(prevState => ({
+        ...prevState,
+        [event.target.name]: getValueInNumber(event.target.value, true)
+    }));
+};
+
+
   const handleSubmit = (e) => {
     e.preventDefault();
     for (const key in formData) {
@@ -81,15 +87,19 @@ const CreateEvent = () => {
           alert('Por favor llena todos los campos'); // You can replace this with your preferred way of displaying errors
           return;
       }
+      if (possibleValues.includes(key)){    
+        var value = extractNumericValue(formData[key]);
+        if (value === ''){
+            alert('Favor de llenar el campo ' + keysInSpanish[key]);
+            return;
+        }
+    }
   }
     console.log('Form Data Submitted:', formData);
     // Asegrate de que el coste siempre tenga dos decimales y sea un nmero
-    fetch('http://localhost:8000/agenda/addEvento', {
+    fetchWithAuth('http://localhost:8000/agenda/addEvento', {
       method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + localStorage.getItem('token'),
-      },
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
           name: formData.payerName,
           type: formData.eventType,
@@ -98,8 +108,8 @@ const CreateEvent = () => {
           year: Number.parseInt(formData.eventDate.split('-')[0]),
           location: formData.location,
           num_of_people: Number.parseInt(formData.attendees),
-          cost: Number.parseInt(formData.price),
-          upfront: Number.parseInt(formData.advancePayment) 
+          cost: Number.parseFloat(extractNumericValue((formData.price))),
+          upfront: Number.parseFloat(extractNumericValue((formData.advancePayment)))
       })
       }).then(response => response.json())
       .then(data => {
@@ -150,11 +160,11 @@ const CreateEvent = () => {
         </label>
         <label>
           Precio del evento
-          <input type="number" min={0} step="1000" name="price" value={formData.price} onChange={handleChange} placeholder='Precio $'/>
+          <input type="text" name="price" value={formData.price} onChange={handleNumberText} placeholder='Precio $'/>
         </label>
         <label>
           Anticipo del evento
-          <input type="number" min={0} step="1000" name="advancePayment" value={formData.advancePayment} onChange={handleChange} placeholder='Anticipo $' />
+          <input type="text" name="advancePayment" value={formData.advancePayment} onChange={handleNumberText} placeholder='Anticipo $' />
         </label>
         <button type="submit" className="submit-button">Registrar Evento</button>
       </form>

@@ -4,7 +4,7 @@ const fetchWithAuth = async (url, options = {}) => {
     if (isTokenExpired()) {
         // Redirigir al usuario al login
         window.location.href = '/login'; // Redirección simple sin usar React Router
-        return Promise.reject(new Error('Session expired'));
+        return Promise.reject(new Error('Sesion expirada'));
     }
 
     // Añadir el token al header de autorización si está disponible

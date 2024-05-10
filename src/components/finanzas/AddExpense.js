@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-//import './EditEvent.css';
-
+import fetchWithAuth from '../../services/fetchWithAuth';
+import { extractNumericValue, getValueInNumber } from '../helpers/numbers';
 
 const AddExpense = () => {
     const navigate = useNavigate();
@@ -24,43 +24,14 @@ const AddExpense = () => {
         date: '',
     });
 
-    const formatValue = (inputValue) => {
-        // Remove non-numeric characters except decimal point
-        const numericValue = inputValue.replace(/[^0-9.]/g, '');
-        // Remove leading zeros from the integer part
-        const parts = numericValue.split('.');
-        parts[0] = parts[0].replace(/^0+/, '');
-        // Format the integer part with commas as thousand separators
-        const formattedInteger = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        // Combine the integer and decimal parts with a dollar sign
-        return (parts.length === 1 ? formattedInteger : formattedInteger + '.' + parts[1]);
-    };
-
     const handleNumberText = (event) => {
-        // Get the input value from the event
-        const inputValue = event.target.value;
-        // Format the input value
-        var formattedValue = formatValue(inputValue);
-        console.log(event.target.name)
-        const numericValue = extractNumericValue(inputValue);
-        var prefix = '';
-        // Update the state with the formatted value
-        if (event.target.name === 'amount'){
-            prefix = '$';
-        }
-        if (parseFloat(numericValue) <= 0){
-            formattedValue = '';
-        }
+        var dollarSign = false;
+        if (event.target.name === 'amount') dollarSign = true;
         setFormData(prevState => ({
             ...prevState,
-            [event.target.name]: prefix + formattedValue
+            [event.target.name]: getValueInNumber(event.target.value, dollarSign)
         }));
     };
-
-    const extractNumericValue = (formattedValue) => {
-        return formattedValue.replace(/[^0-9.]/g, '');
-    };
-
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -70,20 +41,31 @@ const AddExpense = () => {
         }));
     };
 
+    const keysInSpanish = {'quantity':'Cantidad', 'amount':'Monto'}
+
     const handleSubmit = (e) => {
         e.preventDefault();
         const day =  Number.parseInt(formData.date.split('-')[2]);
         const month = Number.parseInt(formData.date.split('-')[1]);
         const year =Number.parseInt(formData.date.split('-')[0]);
         // Check if any of the form fields are empty
+        const possibleValues = ['quantity', 'amount'];
         for (const key in formData) {
             if (!formData[key].trim()) {
                 console.log(key)
                 alert('Por favor llena todos los campos'); // You can replace this with your preferred way of displaying errors
                 return;
             }
+            if (possibleValues.includes(key)){
+                
+                var value = extractNumericValue(formData[key]);
+                if (value === ''){
+                    alert('Favor de llenar el campo ' + keysInSpanish[key]);
+                    return;
+                }
+            }
         }
-        fetch(`http://localhost:8000/finanzas/addGasto`, {
+        fetchWithAuth(`http://localhost:8000/finanzas/addGasto`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 //import './EditEvent.css';
+import { getValueInNumber, extractNumericValue } from '../helpers/numbers';
 
 
 const AddPayment = () => {
@@ -9,17 +10,15 @@ const AddPayment = () => {
     const { state } = useLocation();
     const event = state.event;
     const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-
+    const keysInSpanish = {'quantity':'Cantidad'};
     const eventDate =  event.day + ' de '  + meses[event.month - 1 ] + ' del ' + event.year;
     const [responseMessage, setResponseMessage] = useState('');
 
     const [formData, setFormData] = useState({
         id_event: event.id_event || '',
         payer: event.payer || '',
-        quantity: event.quantity || 100.0
+        quantity: event.quantity || '$'
     });
-
-
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -29,11 +28,23 @@ const AddPayment = () => {
         }));
     };
 
+    const handleNumberText = (event) => {
+        setFormData(prevState => ({
+            ...prevState,
+            [event.target.name]: getValueInNumber(event.target.value, true)
+        }));
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         // Check if any of the form fields are empty
         if (!formData.payer.trim() || !formData.quantity.toString().trim()) {
             alert('Por favor llena los campos'); // You can replace this with your preferred way of displaying errors
+            return;
+        }          
+        var value = extractNumericValue(formData['quantity']);
+        if (value === ''){
+            alert('Favor de llenar el campo ' + keysInSpanish['quantity']);
             return;
         }
 
@@ -69,7 +80,7 @@ const AddPayment = () => {
             </label>
             <label>
                 La cantidad de
-                <input type="number" min={1} step={0.10} name="quantity" value={formData.quantity} onChange={handleChange} />
+                <input type="text" name="quantity" value={formData.quantity} onChange={handleNumberText} />
             </label>
 
 

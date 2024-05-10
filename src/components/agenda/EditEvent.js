@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import './EditEvent.css';
-
+import fetchWithAuth from '../../services/fetchWithAuth';
+import { getValueInNumber, extractNumericValue } from '../helpers/numbers';
 
 const EditEvent = () => {
     const navigate = useNavigate();
@@ -18,18 +19,14 @@ const EditEvent = () => {
         id_event: event.id_event || '',
         type: event.type || '',
         eventDate: new Date(event.year, event.month - 1, event.day).toISOString().split('T')[0] || '',
-        cost: event.cost || '',
+        cost: getValueInNumber(event.cost.toString(), true) || '$',
         location: event.location || '',
         num_of_people: event.num_of_people || '',
-        upfront: event.upfront || ''
+        upfront: getValueInNumber(event.upfront.toString(), true) || '$'
     });
 
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/getLugares', {
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('token'),
-            }
-        })
+        fetchWithAuth('http://127.0.0.1:8000/getLugares', {headers: {}})
           .then(response => response.json())
           .then(data => {
             if (data && data.locations && Array.isArray(data.locations)) {
@@ -45,13 +42,9 @@ const EditEvent = () => {
       }, []);
 
       useEffect(() => {
-        fetch('http://127.0.0.1:8000/getTiposEvento', {
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('token'),
-            }
-        })
-          .then(response => response.json())
-          .then(data => {
+        fetchWithAuth('http://127.0.0.1:8000/getTiposEvento', {headers: {}})
+        .then(response => response.json())
+        .then(data => {
             if (data && data.types && Array.isArray(data.types)) {
               // Extract the types array from the response data and set state
               setEventTypeOptions(data.types);
@@ -73,6 +66,13 @@ const EditEvent = () => {
         }));
     };
 
+    const handleNumberText = (event) => {
+        setFormData(prevState => ({
+            ...prevState,
+            [event.target.name]: getValueInNumber(event.target.value, true)
+        }));
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         // Check if any of the form fields are empty
@@ -89,18 +89,14 @@ const EditEvent = () => {
             year: Number.parseInt(formData.eventDate.split('-')[0]),}
 
         delete allFormData.eventDate; 
-        fetch(`http://localhost:8000/agenda/modifyEvento`, {
+        fetchWithAuth(`http://localhost:8000/agenda/modifyEvento`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token'),
-            },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(allFormData)
-        })
-        .then(response => response.json())
+        }).then(response => response.json())
         .then(data => {
             setResponseMessage(data.message); // Set the response message
-            //navigate('/future-events');
+            navigate('/future-events');
         })
         .catch(error => console.error('Error updating event:', error), response => response.json());
     };
@@ -146,11 +142,11 @@ const EditEvent = () => {
                 </label>
                 <label>
                     Precio del evento
-                    <input type="number" name="cost" value={formData.cost} onChange={handleChange} />
+                    <input type="text" name="cost" value={formData.cost} onChange={handleNumberText} />
                 </label>
                 <label>
                     Anticipo del evento
-                    <input type="number" name="upfront" value={formData.upfront} onChange={handleChange} />
+                    <input type="text" name="upfront" value={formData.upfront} onChange={handleNumberText} />
                 </label>
                 <button type="submit" className="submit-button">Actualizar Evento</button>
             </form>

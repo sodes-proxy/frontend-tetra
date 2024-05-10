@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import './ViewEvent.css';
 import Modal from 'react-modal';
+import fetchWithAuth from '../../services/fetchWithAuth';
 
 const customStyles = {
     content: {
@@ -54,15 +55,11 @@ const ViewEvent = () => {
 
     const handleDeletePayment = () => {
         setModalIsOpen(false);
-        fetch('http://localhost:8000/finanzas/delAbono', {
+        fetchWithAuth('http://localhost:8000/finanzas/delAbono', {
             method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token'),
-            },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({'id_ticket' : idTicket})
-        })
-        .then(response => response.json())
+        }).then(response => response.json())
         .then(data => {
             setResponseMessage(data.message); // Set the response message
             getPayments()
@@ -71,15 +68,11 @@ const ViewEvent = () => {
     };
 
     const getExpenses = () => {
-        fetch('http://localhost:8000/finanzas/getGasto', {
+        fetchWithAuth('http://localhost:8000/finanzas/getGasto', {
             method: 'OPTIONS',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token'),
-            },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({'expenses' : {'id_event' : id}})
-        })
-        .then(response => response.json())
+        }).then(response => response.json())
         .then(data => {
             if (data.expenses && data.expenses.length > 0) {
                 setExpenses(data.expenses);
@@ -92,15 +85,11 @@ const ViewEvent = () => {
     }
 
     const getPayments = () => {
-        fetch('http://localhost:8000/finanzas/getAbono', {
+        fetchWithAuth('http://localhost:8000/finanzas/getAbono', {
             method: 'OPTIONS',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token'),
-            },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({'id_event' : id})
-        })
-        .then(response => response.json())
+        }).then(response => response.json())
         .then(data => {
             if (data.payments && data.payments.length > 0) {
                 setPayments(data.payments);

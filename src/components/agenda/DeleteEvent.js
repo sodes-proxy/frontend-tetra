@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './DeleteEvent.css'; // Reuse the same CSS file for consistent styling
+import fetchWithAuth from '../../services/fetchWithAuth';
 
 const DeleteEvent = () => {
   const [eventId, setEventId] = useState('');
@@ -11,7 +12,7 @@ const DeleteEvent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        const response = await fetch('http://localhost:8000/agenda/delEvento', {
+        const response = await fetchWithAuth('http://localhost:8000/agenda/delEvento', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
