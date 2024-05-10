@@ -3,6 +3,10 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import './EditEvent.css';
 import fetchWithAuth from '../../services/fetchWithAuth';
 import { getValueInNumber, extractNumericValue } from '../helpers/numbers';
+import { openToast } from '../helpers/toast';
+import { getOptions } from '../helpers/options';
+import { handleChange, handleNumberText, handleFetchResponse, handleSubmitEvent } from '../helpers/handles';
+import { EventForm } from './EventForm';
 
 const EditEvent = () => {
     const navigate = useNavigate();
@@ -10,154 +14,44 @@ const EditEvent = () => {
     const { state } = useLocation();
     const event = state.event;
 
+    const [showToast, setShowToast] = useState(false);
     const [eventTypeOptions, setEventTypeOptions] = useState([]);
     const [eventLocations, setEventLocations] = useState([]);
     const [responseMessage, setResponseMessage] = useState('');
 
     const [formData, setFormData] = useState({
-        name: event.name || '',
+        payerName: event.name || '',
         id_event: event.id_event || '',
-        type: event.type || '',
+        eventType: event.type || '',
         eventDate: new Date(event.year, event.month - 1, event.day).toISOString().split('T')[0] || '',
-        cost: getValueInNumber(event.cost.toString(), true) || '$',
+        price: getValueInNumber(event.cost.toString(), true) || '$',
         location: event.location || '',
-        num_of_people: event.num_of_people || '',
-        upfront: getValueInNumber(event.upfront.toString(), true) || '$'
+        attendees: event.num_of_people || '',
+        advancePayment: getValueInNumber(event.upfront.toString(), true) || '$'
     });
 
+     // get event types
     useEffect(() => {
-        fetchWithAuth('http://127.0.0.1:8000/getLugares', {headers: {}})
-          .then(response => response.json())
-          .then(data => {
-            if (data && data.locations && Array.isArray(data.locations)) {
-              // Extract the types array from the response data and set state
-              setEventLocations(data.locations);
-            } else {
-              console.error('Invalid data format:', data);
-            }
-          })
-          .catch(error => {
-            console.error('Error fetching event locations:', error);
-          });
-      }, []);
+        const errorMsg = 'Hubo un problema al obtener los tipos de eventos';
+        getOptions('http://127.0.0.1:8000/getTiposEvento', setEventTypeOptions, setFormData, 'types', 'eventType', 
+        () => openToast(false, errorMsg, 2000, () => setShowToast(false), () => setShowToast(true) ))
+    }, []);
 
-      useEffect(() => {
-        fetchWithAuth('http://127.0.0.1:8000/getTiposEvento', {headers: {}})
-        .then(response => response.json())
-        .then(data => {
-            if (data && data.types && Array.isArray(data.types)) {
-              // Extract the types array from the response data and set state
-              setEventTypeOptions(data.types);
-              
-            } else {
-              console.error('Invalid data format:', data);
-            }
-          })
-          .catch(error => {
-            console.error('Error fetching event types:', error);
-          });
-      }, []);
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-    };
-
-    const handleNumberText = (event) => {
-        setFormData(prevState => ({
-            ...prevState,
-            [event.target.name]: getValueInNumber(event.target.value, true)
-        }));
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Check if any of the form fields are empty
-        for (const key in formData) {
-            if (!formData[key].trim()) {
-                alert('Por favor llena todos los campos'); // You can replace this with your preferred way of displaying errors
-                return;
-            }
-        }
-        
-        const allFormData = {...formData,
-            day: Number.parseInt(formData.eventDate.split('-')[2]),
-            month: Number.parseInt(formData.eventDate.split('-')[1]),
-            year: Number.parseInt(formData.eventDate.split('-')[0]),}
-
-        delete allFormData.eventDate; 
-        fetchWithAuth(`http://localhost:8000/agenda/modifyEvento`, {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(allFormData)
-        }).then(response => response.json())
-        .then(data => {
-            setResponseMessage(data.message); // Set the response message
-            navigate('/future-events');
-        })
-        .catch(error => console.error('Error updating event:', error), response => response.json());
-    };
+    // get locations
+    useEffect(() => {
+        const errorMsg = 'Hubo un problema al querer obtener los lugares';
+        getOptions('http://127.0.0.1:8000/getLugares', setEventLocations, setFormData, 'locations', 'location', 
+        () => openToast(false, errorMsg, 2000, () => setShowToast(false), () => setShowToast(true) ))
+    }, []);
 
     return (
-        <div className="edit-event-container">
-            <form onSubmit={handleSubmit}>
-                <label>
-                    Nombre (responsables de pago)
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} />
-                </label>
-                <label>
-                    Clientes (razón de evento)
-                    <input type="text" name="clientReason" value={formData.clientReason} onChange={handleChange} />
-                </label>
-                <label>
-                    Tipo de evento
-                    <select name="type" value={formData.type} onChange={handleChange}>
-                        {eventTypeOptions.map((option, index) => (
-                        <option key={index} value={option}>{option}</option>
-                        ))}
-                    </select>
-                </label>
-                <label>
-                    Fecha del evento
-                    <input type="date" name="eventDate" value={formData.eventDate} onChange={handleChange} />
-                </label>
-                <label>
-                    Comida para el evento
-                    <input type="text" name="food" value={formData.food} onChange={handleChange} />
-                </label>
-                <label>
-                    Lugar asignado para el evento
-                    <select name="location" value={formData.location} onChange={handleChange}>
-                        {eventLocations.map((option, index) => (
-                        <option key={index} value={option}>{option}</option>
-                        ))}
-                    </select>
-                </label>
-                <label>
-                    No. Asistentes
-                    <input type="number" name="num_of_people" value={formData.num_of_people} onChange={handleChange} />
-                </label>
-                <label>
-                    Precio del evento
-                    <input type="text" name="cost" value={formData.cost} onChange={handleNumberText} />
-                </label>
-                <label>
-                    Anticipo del evento
-                    <input type="text" name="upfront" value={formData.upfront} onChange={handleNumberText} />
-                </label>
-                <button type="submit" className="submit-button">Actualizar Evento</button>
-            </form>
-            {responseMessage && ( // Render popup if responseMessage is not empty
-                <div className="popup-overlay">
-                    <div className="popup-content">
-                        <p>{responseMessage}</p>
-                        <button onClick={() => setResponseMessage('')}>Cerrar</button>
-                    </div>
-                </div>
-            )}
+        <div className='edit-event-container'>
+            <EventForm
+            formData={formData} handleChange={handleChange} eventTypeOptions={eventTypeOptions} 
+            eventLocations={eventLocations} handleNumberText={handleNumberText} setFormData={setFormData}
+            handleSubmit={(e) => handleSubmitEvent(e, 'http://localhost:8000/agenda/modifyEvento', formData, 
+            () => setShowToast(false), () => setShowToast(true),true)} msgBtn={'Actualizar evento'}
+            ></EventForm>
         </div>
     );
 };
