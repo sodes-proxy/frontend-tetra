@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import './CreateEvent.css';
 import fetchWithAuth from '../../services/fetchWithAuth';
 import { getValueInNumber, extractNumericValue } from '../helpers/numbers';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { openToast } from '../helpers/toast';
 
 const CreateEvent = () => {
   const [formData, setFormData] = useState({
@@ -14,31 +17,38 @@ const CreateEvent = () => {
     advancePayment: '$'
   });
 
+  const [showToast, setShowToast] = useState(false);
   const [eventTypeOptions, setEventTypeOptions] = useState([]);
   const [eventLocations, setEventLocations] = useState([]);
-  const [responseMessage, setResponseMessage] = useState('');
-
-  const keysInSpanish = {'price':'Precio del evento', 'upfront':'Anticipo del evento'}
+  //const [responseMessage, setResponseMessage] = useState('');
   const possibleValues = ['price', 'advancePayment'];
 
   // get event types
   useEffect(() => {
     fetchWithAuth('http://127.0.0.1:8000/getTiposEvento', {'headers': {}})
-      .then(response => response.json())
-      .then(data => {
-        if (data && data.types && Array.isArray(data.types)) {
-          // Extract the types array from the response data and set state
-          setEventTypeOptions(data.types);
-          setFormData(prevState => ({
-            ...prevState,
-            ['eventType']: data.types[0]
-          }));
-        } else {
-          console.error('Invalid data format:', data);
-        }
+      .then(async response => {
+        if (response.ok) {
+          return response.json();
+      } else {
+          const data = await response.json();
+          throw { status: response.status, message: response.statusText, data: data };
+      }
+      })
+        .then(data => {
+          if (data && data.types && Array.isArray(data.types)) {
+            // Extract the types array from the response data and set state
+            setEventTypeOptions(data.types);
+            setFormData(prevState => ({
+              ...prevState,
+              ['eventType']: data.types[0]
+            }));
+          } else {
+            console.error('Invalid data format:', data);
+            openToast(false, 'Hubo un problema al obtener los tipos de eventos', 2000, () => setShowToast(false), () => setShowToast(true) )
+          }
       })
       .catch(error => {
-        console.error('Error fetching event types:', error);
+        openToast(false, 'Hubo un problema al obtener los tipos de eventos', 2000, () => setShowToast(false), () => setShowToast(true) )
       });
   }, []);
 
@@ -46,7 +56,14 @@ const CreateEvent = () => {
   useEffect(() => {
     fetchWithAuth('http://127.0.0.1:8000/getLugares', {
       'headers': {'Authorization': 'Bearer ' + localStorage.getItem('token')}
-    }).then(response => response.json())
+    }).then(async response => {
+      if (response.ok) {
+        return response.json();
+    } else {
+        const data = await response.json();
+        throw { status: response.status, message: response.statusText, data: data };
+    }
+    })
       .then(data => {
         if (data && data.locations && Array.isArray(data.locations)) {
           // Extract the types array from the response data and set state
@@ -57,11 +74,12 @@ const CreateEvent = () => {
           }));
         } else {
           console.error('Invalid data format:', data);
+          openToast(false, 'Hubo un problema al querer obtener los lugares', 2000, () => setShowToast(false), () => setShowToast(true) )
         }
-      })
-      .catch(error => {
-        console.error('Error fetching event locations:', error);
-      });
+    })
+    .catch(error => {
+      openToast(false, 'Hubo un problema al querer obtener los lugares', 2000, () => setShowToast(false), () => setShowToast(true) )
+    })
   }, []);
 
   const handleChange = (e) => {
@@ -84,13 +102,16 @@ const CreateEvent = () => {
     e.preventDefault();
     for (const key in formData) {
       if (!formData[key].trim()) {
-          alert('Por favor llena todos los campos'); // You can replace this with your preferred way of displaying errors
+          console.log('hehe')
+          openToast(false, 'Favor de llena todos los campos', 4000, () => setShowToast(false), () => setShowToast(true))
+          //alert('Por favor llena todos los campos'); // You can replace this with your preferred way of displaying errors
           return;
       }
-      if (possibleValues.includes(key)){    
+      else if (possibleValues.includes(key)){    
         var value = extractNumericValue(formData[key]);
         if (value === ''){
-            alert('Favor de llenar el campo ' + keysInSpanish[key]);
+          console.log('hehe')
+            openToast(false, 'Favor de llena todos los campos', 4000, () => setShowToast(false), () => setShowToast(true))
             return;
         }
     }
@@ -111,16 +132,25 @@ const CreateEvent = () => {
           cost: Number.parseFloat(extractNumericValue((formData.price))),
           upfront: Number.parseFloat(extractNumericValue((formData.advancePayment)))
       })
-      }).then(response => response.json())
-      .then(data => {
-          setResponseMessage(data.message); // Set the response message
-          //navigate('/future-events');
+      }).then(async response => {
+        if (response.ok) {
+          return response.json();
+      } else {
+          const data = await response.json();
+          throw { status: response.status, message: response.statusText, data: data };
+      }
       })
-      .catch(error => console.error('Error updating event:', error), response => response.json());
-  };
+        .then(data => {
+          openToast(true, data.message, 6000, () => setShowToast(false), () => setShowToast(true) )
+      })
+      .catch(error => {
+        openToast(false, error.data.message, 6000, () => setShowToast(false), () => setShowToast(true) )
+      } 
+  )};
 
   return (
-    <div className="create-event-container">
+      (<div className="create-event-container">
+      <ToastContainer />
       <form onSubmit={handleSubmit}>
         <label>
           Nombre (responsables de pago)
@@ -168,15 +198,7 @@ const CreateEvent = () => {
         </label>
         <button type="submit" className="submit-button">Registrar Evento</button>
       </form>
-      {responseMessage && ( // Render popup if responseMessage is not empty
-                <div className="popup-overlay">
-                    <div className="popup-content">
-                        <p>{responseMessage}</p>
-                        <button onClick={() => setResponseMessage('')}>Cerrar</button>
-                    </div>
-                </div>
-            )}
-    </div>
+    </div>)
   );
 };
 
