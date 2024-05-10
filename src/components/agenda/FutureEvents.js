@@ -16,8 +16,8 @@ const FutureEvents = () => {
         fetch('http://localhost:8000/agenda/getEvento', {
             method: 'OPTIONS',
             headers: {
-                'Content-Type': 'application/json'
-
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
             },
             body: JSON.stringify(data)
         })
@@ -67,7 +67,11 @@ const FutureEvents = () => {
 
      // get locations
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/getLugares')
+        fetch('http://127.0.0.1:8000/getLugares', {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+            }
+        })
         .then(response => response.json())
         .then(data => {
             if (data && data.locations && Array.isArray(data.locations)) {
@@ -100,7 +104,8 @@ const FutureEvents = () => {
         fetch('http://localhost:8000/agenda/delEvento', {
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
             },
             body: JSON.stringify({ id_event: id }) // Asegúrate de enviar el ID del evento a eliminar
         })

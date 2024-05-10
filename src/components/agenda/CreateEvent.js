@@ -18,7 +18,11 @@ const CreateEvent = () => {
 
   // get event types
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/getTiposEvento')
+    fetch('http://127.0.0.1:8000/getTiposEvento', {
+      'headers': {
+        'Authorization': 'Bearer ' + localStorage.getItem('token')
+      }
+    })
       .then(response => response.json())
       .then(data => {
         if (data && data.types && Array.isArray(data.types)) {
@@ -39,7 +43,11 @@ const CreateEvent = () => {
 
   // get locations
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/getLugares')
+    fetch('http://127.0.0.1:8000/getLugares', {
+      'headers': {
+        'Authorization': 'Bearer ' + localStorage.getItem('token')
+      }
+    })
       .then(response => response.json())
       .then(data => {
         if (data && data.locations && Array.isArray(data.locations)) {
@@ -79,7 +87,8 @@ const CreateEvent = () => {
     fetch('http://localhost:8000/agenda/addEvento', {
       method: 'POST',
       headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem('token'),
       },
       body: JSON.stringify({
           name: formData.payerName,

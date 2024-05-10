@@ -40,7 +40,8 @@ const AddPayment = () => {
         fetch(`http://localhost:8000/finanzas/addAbono`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
             },
             body: JSON.stringify({
                 'quantity': Number.parseFloat(formData.quantity),

@@ -86,7 +86,8 @@ const AddExpense = () => {
         fetch(`http://localhost:8000/finanzas/addGasto`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
             },
             body: JSON.stringify({
                 id_event: formData.id_event,

@@ -56,7 +56,10 @@ const ViewEvent = () => {
         setModalIsOpen(false);
         fetch('http://localhost:8000/finanzas/delAbono', {
             method: 'DELETE',
-            headers: {'Content-Type': 'application/json'},
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+            },
             body: JSON.stringify({'id_ticket' : idTicket})
         })
         .then(response => response.json())
@@ -70,7 +73,10 @@ const ViewEvent = () => {
     const getExpenses = () => {
         fetch('http://localhost:8000/finanzas/getGasto', {
             method: 'OPTIONS',
-            headers: {'Content-Type': 'application/json'},
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+            },
             body: JSON.stringify({'expenses' : {'id_event' : id}})
         })
         .then(response => response.json())
@@ -88,7 +94,10 @@ const ViewEvent = () => {
     const getPayments = () => {
         fetch('http://localhost:8000/finanzas/getAbono', {
             method: 'OPTIONS',
-            headers: {'Content-Type': 'application/json'},
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+            },
             body: JSON.stringify({'id_event' : id})
         })
         .then(response => response.json())
@@ -97,7 +106,7 @@ const ViewEvent = () => {
                 setPayments(data.payments);
             } else {
                 setPayments([]);
-                console.log('No expenses found.');
+                console.log('No payments found.');
             }
         })
         .catch(error => console.error('Error fetching events:', error));
@@ -187,7 +196,7 @@ const ViewEvent = () => {
                     </tr>
                      </thead>
                      <tbody>
-                    {payments.length === 0 ? (
+                    {expenses.length === 0 ? (
                         <tr><td colSpan="4">No hay abonos registrados para el evento.</td></tr>
                     ) : (
                         expenses.map(expenses => (

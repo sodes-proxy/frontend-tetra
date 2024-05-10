@@ -14,7 +14,8 @@ const DeleteEvent = () => {
         const response = await fetch('http://localhost:8000/agenda/delEvento', {
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
             },
             body: JSON.stringify({ id_event: eventId })
         });
