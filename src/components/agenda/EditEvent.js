@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import './EditEvent.css';
-import fetchWithAuth from '../../services/fetchWithAuth';
 import { getValueInNumber, extractNumericValue } from '../helpers/numbers';
 import { openToast } from '../helpers/toast';
 import { getOptions } from '../helpers/options';
-import { handleChange, handleNumberText, handleFetchResponse, handleSubmitEvent } from '../helpers/handles';
+import { handleChange, handleNumberText, handleSubmitEvent } from '../helpers/handles';
 import { EventForm } from './EventForm';
 
 const EditEvent = () => {
@@ -17,7 +16,6 @@ const EditEvent = () => {
     const [showToast, setShowToast] = useState(false);
     const [eventTypeOptions, setEventTypeOptions] = useState([]);
     const [eventLocations, setEventLocations] = useState([]);
-    const [responseMessage, setResponseMessage] = useState('');
 
     const [formData, setFormData] = useState({
         payerName: event.name || '',
@@ -33,14 +31,14 @@ const EditEvent = () => {
      // get event types
     useEffect(() => {
         const errorMsg = 'Hubo un problema al obtener los tipos de eventos';
-        getOptions('http://127.0.0.1:8000/getTiposEvento', setEventTypeOptions, setFormData, 'types', 'eventType', 
+        getOptions('http://127.0.0.1:8000/getTiposEvento', {}, setEventTypeOptions, setFormData, 'types', 'eventType', 
         () => openToast(false, errorMsg, 2000, () => setShowToast(false), () => setShowToast(true) ))
     }, []);
 
     // get locations
     useEffect(() => {
         const errorMsg = 'Hubo un problema al querer obtener los lugares';
-        getOptions('http://127.0.0.1:8000/getLugares', setEventLocations, setFormData, 'locations', 'location', 
+        getOptions('http://127.0.0.1:8000/getLugares', {}, setEventLocations, setFormData, 'locations', 'location', 
         () => openToast(false, errorMsg, 2000, () => setShowToast(false), () => setShowToast(true) ))
     }, []);
 
@@ -49,7 +47,20 @@ const EditEvent = () => {
             <EventForm
             formData={formData} handleChange={handleChange} eventTypeOptions={eventTypeOptions} 
             eventLocations={eventLocations} handleNumberText={handleNumberText} setFormData={setFormData}
-            handleSubmit={(e) => handleSubmitEvent(e, 'http://localhost:8000/agenda/modifyEvento', formData, 
+            handleSubmit={(e) => handleSubmitEvent(e, 'http://localhost:8000/agenda/modifyEvento', {method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                name: formData.payerName,
+                type: formData.eventType,
+                day: Number.parseInt(formData.eventDate.split('-')[2]),
+                month: Number.parseInt(formData.eventDate.split('-')[1]),
+                year: Number.parseInt(formData.eventDate.split('-')[0]),
+                location: formData.location,
+                num_of_people: Number.parseInt(formData.attendees),
+                cost: Number.parseFloat(extractNumericValue((formData.price))),
+                upfront: Number.parseFloat(extractNumericValue((formData.advancePayment))),
+                id_event:formData.id_event
+            })}, formData, 
             () => setShowToast(false), () => setShowToast(true),true)} msgBtn={'Actualizar evento'}
             ></EventForm>
         </div>

@@ -1,7 +1,7 @@
 
 import fetchWithAuth from "../../services/fetchWithAuth";
-const getOptions = (url, setData, setFormData, key, internalKey, showAlert) => {
-    fetchWithAuth(url, {'headers': {}})
+const getOptions = (url, options,  setData, setFormData, key, internalKey, showAlert) => {
+    fetchWithAuth(url, options)
           .then(async response => {
             if (response.ok) {
               return response.json();
@@ -14,19 +14,20 @@ const getOptions = (url, setData, setFormData, key, internalKey, showAlert) => {
               if (data && data[key] && Array.isArray(data[key])) {
                 // Extract the types array from the response data and set state
                 setData(data[key]);
-                setFormData(prevState => ({
-                  ...prevState,
-                  [internalKey]: data[key][0]
-                }));
+                if (setFormData !== null){
+                  setFormData(prevState => ({
+                    ...prevState,
+                    [internalKey]: data[key][0]
+                  }));
+                }
               } else {
                 console.error('Invalid data format:', data);
                 showAlert()
-                //openToast(false, errorMsg, 2000, () => setShowToast(false), () => setShowToast(true) )
               }
           })
           .catch(error => {
+            console.error(error, key)
             showAlert()
-            //openToast(false, errorMsg, 2000, () => setShowToast(false), () => setShowToast(true) )
           });
 }
 

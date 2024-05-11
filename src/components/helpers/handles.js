@@ -17,17 +17,18 @@ const handleChange = (e, setFormData) => {
     }));
 };
 
-const handleFetchResponse  = async (response, onShow, onClose) => {
+const handleFetchResponse  = async (response, onShow, onClose, actionOnSuccess) => {
   if (response.ok) {
     const data = await response.json();
     openToast(true, data.message, 6000, onClose, onShow);
+    actionOnSuccess()
   } else {
     const data = await response.json();
     throw { status: response.status, message: response.statusText, data: data };
   }
 };
 
-const handleSubmitEvent = (e, url, formData, onClose, onShow, isEdit) => {
+const handleSubmitEvent = (e, url, options, formData, onClose, onShow) => {
   e.preventDefault();
   const possibleValues = ['price', 'advancePayment'];
   for (const key in formData) {
@@ -47,25 +48,20 @@ const handleSubmitEvent = (e, url, formData, onClose, onShow, isEdit) => {
       }
   }
 }
-  fetchWithAuth(url, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-        name: formData.payerName,
-        type: formData.eventType,
-        day: Number.parseInt(formData.eventDate.split('-')[2]),
-        month: Number.parseInt(formData.eventDate.split('-')[1]),
-        year: Number.parseInt(formData.eventDate.split('-')[0]),
-        location: formData.location,
-        num_of_people: Number.parseInt(formData.attendees),
-        cost: Number.parseFloat(extractNumericValue((formData.price))),
-        upfront: Number.parseFloat(extractNumericValue((formData.advancePayment))),
-        ...(isEdit ? {'id_event':formData.id_event} : {})
-    })
-    }).then(response => handleFetchResponse(response, onShow, onClose)
+  fetchWithAuth(url, options).then(response => handleFetchResponse(response, onShow, onClose, () => {})
       .catch(error => {
           openToast(false, error.data.message, 6000, onClose, onShow);
       })
 )};
 
-export { handleChange, handleNumberText, handleFetchResponse, handleSubmitEvent };
+const handleDelete = (url, options, setData, onShow, onClose) => {
+  fetchWithAuth(url, options)
+    .then(response => handleFetchResponse(response, onShow, onClose, setData)
+    .catch(error => {
+        openToast(false, error.data.message, 6000, onClose, onShow);
+      })
+  )
+}
+
+export { handleChange, handleNumberText, handleFetchResponse, handleSubmitEvent, handleDelete };
+
