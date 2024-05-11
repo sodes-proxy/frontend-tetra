@@ -89,8 +89,6 @@ const ViewEvent = () => {
         setModalIsOpen(false);
     }
 
-    
-
     return (
         <div>
             <DeleteModal isOpen={modalIsOpen} onRequestClose={cancelDelete} onDelete={handleDel} />
