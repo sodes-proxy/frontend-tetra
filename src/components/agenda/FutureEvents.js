@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import './FutureEvents.css';
-import fetchWithAuth from '../../services/fetchWithAuth';
-import { getOptions } from '../helpers/options';
+import { getList } from '../helpers/options';
 import { openToast } from '../helpers/toast';
 import { handleChange, handleDelete } from '../helpers/handles';
 
@@ -18,7 +17,7 @@ const FutureEvents = () => {
 
     const getEvents = (data) => {
         const errorMsg = 'No se encontraron eventos';
-        getOptions('http://localhost:8000/agenda/getEvento', { method: 'OPTIONS',
+        getList('http://localhost:8000/agenda/getEvento', { method: 'OPTIONS',
         headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)}, setEvents, null, 'events', null, 
         () => openToast(false, errorMsg, 2000, onClose, onShow))
     }
@@ -44,7 +43,7 @@ const FutureEvents = () => {
 
     useEffect(() => {
         const errorMsg = 'Hubo un problema al querer obtener los lugares';
-        getOptions('http://127.0.0.1:8000/getLugares', {}, setEventLocations, setFormData, 'locations', 'location', 
+        getList('http://127.0.0.1:8000/getLugares', {}, setEventLocations, setFormData, 'locations', 'location', 
         () => openToast(false, errorMsg, 2000, onClose, onShow))
     }, []);
 

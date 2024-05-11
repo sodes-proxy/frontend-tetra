@@ -40,7 +40,7 @@ const RouterContent = () => {
         <Route path='/agregar-abono/:id' element={<RequireAuth><AddPayment /></RequireAuth>} />
         <Route path='/ver-evento/:id' element={<RequireAuth><ViewEvent /></RequireAuth>} />
         <Route path="/login" element={<Login />} />
-        <Route path='/agregar-gasto/:id' element={<AddExpense />} />
+        <Route path='/agregar-gasto/:id' element={<RequireAuth><AddExpense /></RequireAuth>} />
       </Routes>
     </>
   );

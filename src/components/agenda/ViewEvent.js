@@ -1,35 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import './ViewEvent.css';
-import Modal from 'react-modal';
 import fetchWithAuth from '../../services/fetchWithAuth';
-
-const customStyles = {
-    content: {
-        top: '50%',
-        left: '50%',
-        right: 'auto',
-        bottom: 'auto',
-        marginRight: '-50%',
-        transform: 'translate(-50%, -50%)',
-        backgroundColor: '#fff',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    },
-    overlay: {
-        backgroundColor: 'rgba(0,0,0,0.5)'
-    }
-};
-
-const DeleteModal = ({ isOpen, onRequestClose, onDelete }) => {
-    return (
-        <Modal isOpen={isOpen} onRequestClose={onRequestClose} style={customStyles}>
-            <h2>Confirmar eliminacion</h2>
-            <p>Estas seguro de querer eliminar?</p>
-            <button onClick={onDelete}>Eliminar</button>
-            <button onClick={onRequestClose}>Cancelar</button>
-        </Modal>
-    );
-};
+import { DeleteModal } from '../helpers/modal';
+import { handleDelete } from '../helpers/handles';
+import { getList } from '../helpers/options';
 
 const ViewEvent = () => {
     const navigate = useNavigate();
@@ -38,67 +13,59 @@ const ViewEvent = () => {
     const event = state.event;
     const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
-    const eventDate =  event.day + ' de '  + meses[event.month - 1 ] + ' del ' + event.year;
-
     const [eventData, setEventData] = useState({});
     const [idTicket, setIdTicket] = useState('');
+    const [idExpense, setIdExpense] = useState('');
     const [viewType, setViewType] = useState('');
     const [expenses, setExpenses] = useState([]);
     const [payments, setPayments] = useState([]);
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [responseMessage, setResponseMessage] = useState('');
+    const [showToast, setShowToast] = useState(false);
+    const onShow =  () => { setShowToast(true) };
+    const onClose =  () => { setShowToast(false) };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setViewType(value);
     };
 
-    const handleDeletePayment = () => {
-        setModalIsOpen(false);
-        fetchWithAuth('http://localhost:8000/finanzas/delAbono', {
+    const handleDel = () => {
+        setModalIsOpen(false)
+        if (idTicket !== ''){
+            handleDelete('http://localhost:8000/finanzas/delAbono', {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({'id_ticket' : idTicket})
-        }).then(response => response.json())
-        .then(data => {
-            setResponseMessage(data.message); // Set the response message
-            getPayments()
-        })
-        .catch(error => console.error('Error fetching events:', error));
+        }, () => setPayments(payments.filter(payment => payment.id_ticket !== idTicket)), onShow, onClose)
+        }
+        else{
+            handleDelete('http://localhost:8000/finanzas/modifyGasto', {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({'id_expense' : idExpense, 'id_event': id, 'portion' : 0.0})
+        }, () => setPayments(payments.filter(payment => payment.id_ticket !== idTicket)), onShow, onClose)
+        }
+        
     };
 
     const getExpenses = () => {
-        fetchWithAuth('http://localhost:8000/finanzas/getGasto', {
+        const errorMsg = 'Hubo un problema al obtener los gastos del evento';
+        getList('http://localhost:8000/finanzas/getGasto', {
             method: 'OPTIONS',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({'expenses' : {'id_event' : id}})
-        }).then(response => response.json())
-        .then(data => {
-            if (data.expenses && data.expenses.length > 0) {
-                setExpenses(data.expenses);
-            } else {
-                setExpenses([]);
-                console.log('No expenses found.');
-            }
-        })
-        .catch(error => console.error('Error fetching events:', error));
+        }, setExpenses, null, 'expenses', 
+        null, errorMsg, onShow, onClose)
     }
 
     const getPayments = () => {
-        fetchWithAuth('http://localhost:8000/finanzas/getAbono', {
+        const errorMsg = 'Hubo un problema al obtener los abonos del evento';
+        getList('http://localhost:8000/finanzas/getAbono', {
             method: 'OPTIONS',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({'id_event' : id})
-        }).then(response => response.json())
-        .then(data => {
-            if (data.payments && data.payments.length > 0) {
-                setPayments(data.payments);
-            } else {
-                setPayments([]);
-                console.log('No payments found.');
-            }
-        })
-        .catch(error => console.error('Error fetching events:', error));
+        }, setPayments, null, 'payments', 
+        null, errorMsg, onShow, onClose)
     }
 
     useEffect(() => {
@@ -106,19 +73,27 @@ const ViewEvent = () => {
         else if (viewType === 'payment') getPayments()
     }, [viewType]);
 
+    useEffect(() => {if (idExpense !== '')setModalIsOpen(true); },[idExpense]);
     useEffect(() => {if (idTicket !== '')setModalIsOpen(true); },[idTicket]);
 
     const handleNewPayment = () => {navigate(`/agregar-abono/${id}`, { state: { event } });};
     const handleNewExpense = () => {navigate(`/agregar-gasto/${id}`, { state: { event } });};
 
-    const cancelDelete =  () => {
-        setIdTicket('');
+    const cancelDelete =  (set) => {
+        if (idTicket !== ''){
+            setIdTicket('')
+        }
+        else {
+            setIdTicket('')
+        }
         setModalIsOpen(false);
     }
 
+    
+
     return (
         <div>
-            <DeleteModal isOpen={modalIsOpen} onRequestClose={cancelDelete} onDelete={handleDeletePayment} />
+            <DeleteModal isOpen={modalIsOpen} onRequestClose={cancelDelete} onDelete={handleDel} />
             <div className="view-event-container">
             <fieldset onChange={handleChange}>
             <legend>Seleccion que quiere ver</legend>
@@ -126,12 +101,10 @@ const ViewEvent = () => {
                 <input type="radio" id="expenses" name="viewType" value="expenses" />
                 <label htmlFor="expenses">Gastos</label>
             </div>
-
             <div>
                 <input type="radio" id="payment" name="viewType" value="payment" />
                 <label htmlFor="payment">Abonos</label>
             </div>
-
             <div>
                 <input type="radio" id="event" name="viewType" value="event" />
                 <label htmlFor="event">Datos</label>
@@ -182,6 +155,7 @@ const ViewEvent = () => {
                         <th>Comprador</th>
                         <th>Cantidad</th>
                         <th>Costo</th>
+                        <th>Accione</th>
                     </tr>
                      </thead>
                      <tbody>
@@ -197,6 +171,9 @@ const ViewEvent = () => {
                                 <td>{expenses.buyer}</td>
                                 <td>{expenses.portion.toLocaleString()}</td>
                                 <td>${expenses.amount.toLocaleString()}</td>
+                                <td >
+                                <button className="delete" onClick={() => setIdExpense(expenses.id_expense)}>Eliminar</button>
+                                </td> 
                             </tr>
                         ))
                     )}
@@ -210,14 +187,6 @@ const ViewEvent = () => {
             </table>
             </div>
         </div>
-        {responseMessage && ( // Render popup if responseMessage is not empty
-                <div className="popup-overlay">
-                    <div className="popup-content">
-                        <p>{responseMessage}</p>
-                        <button onClick={() => setResponseMessage('')}>Cerrar</button>
-                    </div>
-                </div>
-            )}
         </div>
         
     );

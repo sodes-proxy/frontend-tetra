@@ -28,9 +28,8 @@ const handleFetchResponse  = async (response, onShow, onClose, actionOnSuccess) 
   }
 };
 
-const handleSubmitEvent = (e, url, options, formData, onClose, onShow) => {
+const handleSubmit = (e, url, options, formData, possibleValues, onClose, onShow, actionOnSuccess) => {
   e.preventDefault();
-  const possibleValues = ['price', 'advancePayment'];
   for (const key in formData) {
     
     const trimmedValue = typeof formData[key] === 'string' ? formData[key].trim() : formData[key];
@@ -48,7 +47,7 @@ const handleSubmitEvent = (e, url, options, formData, onClose, onShow) => {
       }
   }
 }
-  fetchWithAuth(url, options).then(response => handleFetchResponse(response, onShow, onClose, () => {})
+  fetchWithAuth(url, options).then(response => handleFetchResponse(response, onShow, onClose, actionOnSuccess)
       .catch(error => {
           openToast(false, error.data.message, 6000, onClose, onShow);
       })
@@ -63,5 +62,5 @@ const handleDelete = (url, options, setData, onShow, onClose) => {
   )
 }
 
-export { handleChange, handleNumberText, handleFetchResponse, handleSubmitEvent, handleDelete };
+export { handleChange, handleNumberText, handleFetchResponse, handleSubmit, handleDelete };
 

@@ -1,6 +1,8 @@
 
 import fetchWithAuth from "../../services/fetchWithAuth";
-const getOptions = (url, options,  setData, setFormData, key, internalKey, showAlert) => {
+import { openToast } from "./toast";
+
+const getList = (url, options,  setData, setFormData, key, internalKey, errorMsg, onShow, onClose) => {
     fetchWithAuth(url, options)
           .then(async response => {
             if (response.ok) {
@@ -22,13 +24,13 @@ const getOptions = (url, options,  setData, setFormData, key, internalKey, showA
                 }
               } else {
                 console.error('Invalid data format:', data);
-                showAlert()
+                openToast(false, errorMsg, 2000, onClose, onShow)
               }
           })
           .catch(error => {
             console.error(error, key)
-            showAlert()
+            openToast(false, errorMsg, 2000, onClose, onShow)
           });
 }
 
-export { getOptions };
+export { getList };

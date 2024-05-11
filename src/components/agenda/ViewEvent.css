@@ -54,7 +54,8 @@ table button.payment {
 }
 
 .view-event-container {
-    position: relative;
+    overflow-y: auto; /* Enable vertical scrolling */
+    height: 400px;
     width: 60%;
     margin: 20px auto;
     min-width: 300px;
@@ -64,16 +65,22 @@ table button.payment {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+
 .table-wrapper {
     overflow-x: auto;
     margin-top: 60px; /* Adjust this value based on the height of the fieldset */
 }
 
 fieldset {
+  top: 0;
+  z-index: 1000; /* Adjust the z-index as needed */
+}
+
+thead th {
     position: sticky;
     top: 0;
-    z-index: 0; /* Ensure the fieldset appears above other elements */
-}
+    background-color: white; /* Optional: Ensure header background color matches the container */
+  }
 
 
 .future-events-table button:hover {
