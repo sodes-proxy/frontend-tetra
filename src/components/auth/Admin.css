@@ -1,11 +1,3 @@
-.admin-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-}
-
-
 .admin-logo {
     width: 150px;
     margin-bottom: 20px;
@@ -15,6 +7,37 @@ input[type="text"] {
     width: 100px;
   }
 
+  input[type="password"] {
+    width: 100px;
+  }
+
   td {
     vertical-align: text-bottom;
   }
+
+   button {
+    margin-right: 5px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.admin-container button.edit {
+    background-color: #ffeb3b;  /* Amarillo para el botón Editar */
+}
+
+.admin-container button.delete {
+    background-color: #f44336;  /* Rojo para el botón Eliminar */
+}
+
+.admin-container button.payment {
+    background-color: #119ABB;  /* Azul para el botón Abono */
+}
+
+#addUser {
+  display: flex;
+  align-items: end;
+  background-color: #119ABB;
+}
