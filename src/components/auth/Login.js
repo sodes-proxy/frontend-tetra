@@ -10,7 +10,9 @@ const decodeJWT = (token) => {
             return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
 
-        return JSON.parse(jsonPayload);
+        const decodedToken = JSON.parse(jsonPayload);
+        const { role } = decodedToken; // Assuming role is a field in the JWT payload
+        return { ...decodedToken, role }; // Merge role with other decoded fields
     } catch (error) {
         console.error("Failed to decode JWT:", error);
         return null;
@@ -30,7 +32,7 @@ const Login = () => {
             },
             body: JSON.stringify({ email, password })
         });
-
+    
         if (response.ok) {
             const { token } = await response.json();
             if (token) {
@@ -39,6 +41,7 @@ const Login = () => {
                     const expirationTime = new Date(decoded.exp * 1000);
                     localStorage.setItem('token', token);
                     localStorage.setItem('expirationTime', expirationTime.toISOString());
+                    localStorage.setItem('role', decoded.role); // Store role in local storage
                     navigate('/');
                 } else {
                     console.error('Expiration time is missing from the token');

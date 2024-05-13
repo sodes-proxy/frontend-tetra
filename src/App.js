@@ -12,6 +12,7 @@ import ViewEvent from './components/agenda/ViewEvent';
 import Login from './components/auth/Login';
 import RequireAuth from './components/auth/RequireAuth';
 import AddExpense from './components/finanzas/AddExpense';
+import Admin from './components/auth/Admin';
 import React from 'react';
 
 const App = () => {
@@ -31,7 +32,7 @@ const RouterContent = () => {
     <>
       {location.pathname !== '/login' && <BackToHomeButton />}
       <Routes>
-        <Route path="/" element={<Home userRole={"admin"}/>} />
+        <Route path="/" element={<RequireAuth><Home/></RequireAuth>} />
         <Route path="/crear-evento" element={<RequireAuth><CreateEvent/></RequireAuth>}/>
         <Route path="/eliminar-evento" element={<RequireAuth><DeleteEvent/></RequireAuth>} />
         <Route path="/agenda-eventos" element={<RequireAuth><FutureEvents/></RequireAuth>} />
@@ -41,6 +42,7 @@ const RouterContent = () => {
         <Route path='/ver-evento/:id' element={<RequireAuth><ViewEvent /></RequireAuth>} />
         <Route path="/login" element={<Login />} />
         <Route path='/agregar-gasto/:id' element={<RequireAuth><AddExpense /></RequireAuth>} />
+        <Route path='/administrar-usuarios' element={<RequireAuth> <Admin/> </RequireAuth>} />
       </Routes>
     </>
   );
