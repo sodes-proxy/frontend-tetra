@@ -10,14 +10,12 @@ const AddExpense = () => {
     const event = state.event;
     const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
     const [showToast, setShowToast] = useState(false);
-    const eventDate =  event.day + ' de '  + meses[event.month - 1 ] + ' del ' + event.year;
     const onShow =  () => { setShowToast(true) };
     const onClose =  () => { setShowToast(false) };
 
 
 
     const [formData, setFormData] = useState({
-        id_event: event.id_event || '',
         buyer: '',
         amount: '$',
         concept: '',
@@ -25,7 +23,8 @@ const AddExpense = () => {
         quantity: '',
         expense_type: 'Inventario',
         date: '',
-        ...(event ? {id_event: event.id_event, expense_type: 'Inventario',}: {id_event:'GENERAL', expense_type: id} )
+        ...(event ? {id_event: event.id_event, expense_type: 'Inventario',}: 
+        {id_event:'GENERAL', expense_type: id} )
     });
 
     const handleAdd = (e) => {
@@ -61,7 +60,7 @@ const AddExpense = () => {
                 <React.Fragment>
                      <label>Estas agregando un gasto al evento {formData.id_event}</label>
                     <label>Nombre: {event.name}</label>
-                    <label>La fecha del evento es {eventDate}</label>
+                    <label>La fecha del evento es {event.day + ' de '  + meses[event.month - 1 ] + ' del ' + event.year}</label>
                 </React.Fragment>
             )}
             
@@ -70,7 +69,7 @@ const AddExpense = () => {
             Categoria
                 <select name="category" value={formData.category} onChange={(e) => handleChange(e, setFormData)}>
                     <option key={1} value={'Alimentos'}>Alimentos</option>
-                    <option key={2} value={'Comida'}>Comida</option>
+                    <option key={2} value={'Bebidas'}>Bebidas</option>
                 </select>
             </label>
             <label>Comprador<input type="text" name="buyer" value={formData.buyer} onChange={(e) => handleChange(e, setFormData)} /></label>

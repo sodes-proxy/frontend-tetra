@@ -22,7 +22,7 @@ const ViewFinanzas = () => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [showToast, setShowToast] = useState(false);
 
-    const handleNewExpense = (expense_type) => {navigate(`/agregar-gasto/${expense_type}`, { state: { } });};
+    const handleNewExpense = (expense_type) => {navigate(`/agregar-gasto/${formData.expense_type}`, { state: { } });};
 
     
 
