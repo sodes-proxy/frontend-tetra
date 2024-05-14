@@ -113,18 +113,18 @@ const Admin = () => {
                         ))
                     )}
                     {isCreating === true ? (
-                                    <tr>
-                                        <td><input type='text' name='name' value={formData.name} onChange={(e)=>handleChange(e, setFormData)}/></td>
-                                        <td><input type='text' name='email' value={formData.email} onChange={(e)=>handleChange(e, setFormData)}/></td>
-                                        <td><select name="role" value={formData.role} onChange={(e)=>handleChange(e, setFormData)}>
-                                        {roles_list.map((option, index) => (
-                                            <option key={index} value={option}>{roles[option]}</option>
-                                        ))}
-                                    </select></td>
-                                        <td><input type='password' name='password' onChange={(e)=>setPassword(e.target.value)}/></td>
-                                        <td><button className="payment" onClick={(e)=> {handleNewUser(e)}} >Confirmar</button>  
-                                    <button className="delete" onClick={()=> {setIsCreating(false)}} >Cancelar</button></td>
-                                    </tr>):null}
+                        <tr>
+                            <td><input type='text' name='name' value={formData.name} onChange={(e)=>handleChange(e, setFormData)}/></td>
+                            <td><input type='text' name='email' value={formData.email} onChange={(e)=>handleChange(e, setFormData)}/></td>
+                            <td><select name="role" value={formData.role} onChange={(e)=>handleChange(e, setFormData)}>
+                            {roles_list.map((option, index) => (
+                                <option key={index} value={option}>{roles[option]}</option>
+                            ))}
+                        </select></td>
+                            <td><input type='password' name='password' onChange={(e)=>setPassword(e.target.value)}/></td>
+                            <td><button className="payment" onClick={(e)=> {handleNewUser(e)}} >Confirmar</button>  
+                        <button className="delete" onClick={()=> {setIsCreating(false)}} >Cancelar</button></td>
+                        </tr>):null}
                 </tbody>
             </table>
             </div>

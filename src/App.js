@@ -12,7 +12,8 @@ import ViewEvent from './components/agenda/ViewEvent';
 import Login from './components/auth/Login';
 import RequireAuth from './components/auth/RequireAuth';
 import AddExpense from './components/finanzas/AddExpense';
-import Admin from './components/auth/Admin';
+import Admin from './components/admin/Admin';
+import { AdminOptions } from './components/admin/AdminOptions';
 import React from 'react';
 
 const App = () => {
@@ -43,6 +44,7 @@ const RouterContent = () => {
         <Route path="/login" element={<Login />} />
         <Route path='/agregar-gasto/:id' element={<RequireAuth><AddExpense /></RequireAuth>} />
         <Route path='/administrar-usuarios' element={<RequireAuth> <Admin/> </RequireAuth>} />
+        <Route path='/administrar-opciones' element={<RequireAuth> <AdminOptions/> </RequireAuth>} />
       </Routes>
     </>
   );

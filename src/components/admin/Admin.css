@@ -3,11 +3,11 @@
     margin-bottom: 20px;
 }
 
-input[type="text"] {
+.admin-container input[type="text"] {
     width: 100px;
   }
 
-  input[type="password"] {
+  .admin-container input[type="password"] {
     width: 100px;
   }
 

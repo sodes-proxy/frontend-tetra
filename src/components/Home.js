@@ -11,6 +11,7 @@ const buttonsData = [
   { text: "Reportar Compra", path: "/reportar-compra", roles: ['admin', 'finance'] },
   { text: "Historial Eventos", path: "/historial-eventos", roles: ['all'] },
   { text: "Administrar Usuarios", path: "/administrar-usuarios", roles: ['admin'] },
+  { text: "Administrar Opciones", path: "/administrar-opciones", roles: ['admin'] },
   // Add more buttons as needed
 ];
 
