@@ -42,7 +42,7 @@ const ViewEvent = () => {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({'id_expense' : idExpense, 'id_event': id, 'portion' : 0.0})
-        }, () => setPayments(payments.filter(payment => payment.id_ticket !== idTicket)), onShow, onClose)
+        }, () => setExpenses(expenses.filter(expense => expense.id_expense !== idExpense)), onShow, onClose)
         }
         
     };

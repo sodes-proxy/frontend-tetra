@@ -15,6 +15,7 @@ import AddExpense from './components/finanzas/AddExpense';
 import Admin from './components/admin/Admin';
 import { AdminOptions }  from './components/admin/AdminOptions';
 import ViewFinanzas from './components/finanzas/ViewFinanzas';
+import AssignExpense from './components/finanzas/AssignExpense';
 import React from 'react';
 
 const App = () => {
@@ -47,6 +48,7 @@ const RouterContent = () => {
         <Route path='/administrar-usuarios' element={<RequireAuth> <Admin/> </RequireAuth>} />
         <Route path='/administrar-opciones' element={<RequireAuth> <AdminOptions/> </RequireAuth>} />
         <Route path='/finanzas' element={<RequireAuth> <ViewFinanzas/> </RequireAuth>} />
+        <Route path='/asignar-gasto' element={<RequireAuth> <AssignExpense/> </RequireAuth>} />
       </Routes>
     </>
   );

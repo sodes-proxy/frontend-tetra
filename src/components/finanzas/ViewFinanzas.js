@@ -17,13 +17,11 @@ const ViewFinanzas = () => {
       });
 
     const [idExpense, setIdExpense] = useState('');
-
-
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [showToast, setShowToast] = useState(false);
 
     const handleNewExpense = (expense_type) => {navigate(`/agregar-gasto/${formData.expense_type}`, { state: { } });};
-
+    const handleAssign = (expense, id) => {navigate(`/asignar-gasto/`, { state: { expense } });};
     
 
     const onShow =  () => { setShowToast(true) };
@@ -83,7 +81,7 @@ const ViewFinanzas = () => {
                     <th>Categoria</th>
                     <th>Concepto</th>
                     <th>Comprador</th>
-                    <th>Cantidad</th>
+                    {formData.expense_type === 'Inventario' && ( <th>Disponible</th>)}
                     <th>Costo</th>
                     <th>Acciones</th>
                 </tr>
@@ -101,10 +99,13 @@ const ViewFinanzas = () => {
                             <td>{expense.category}</td>
                             <td>{expense.concept}</td>
                             <td>{expense.buyer}</td>
-                            <td>{expense.available.toLocaleString()}</td>
+                            {expense.expense_type === 'Inventario' && ( <td>{expense.available.toLocaleString()}</td>)}
                             <td>${expense.amount.toLocaleString()}</td>
                             <td>
                                 <button className="delete" onClick={() => setIdExpense(expense.id_expense)}>Eliminar</button>
+                                {expense.expense_type === 'Inventario' && (
+                                    <button className="payment" onClick={() => handleAssign(expense, expense.id_expense)}>Asignar</button>
+                                )}
                             </td> 
                         </tr>
                     ))

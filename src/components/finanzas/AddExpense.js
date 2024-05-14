@@ -19,12 +19,13 @@ const AddExpense = () => {
         buyer: '',
         amount: '$',
         concept: '',
-        category: 'Alimentos',
+        
         quantity: '',
         expense_type: 'Inventario',
         date: '',
         ...(event ? {id_event: event.id_event, expense_type: 'Inventario',}: 
-        {id_event:'GENERAL', expense_type: id} )
+        {id_event:'GENERAL', expense_type: id} ),
+        ...(id === 'Gastos Administrativos' ? {category: 'Administrativo',}:{category: 'Alimentos'})
     });
 
     const handleAdd = (e) => {
@@ -64,14 +65,18 @@ const AddExpense = () => {
                 </React.Fragment>
             )}
             
-            <label>Fecha de compra<input type="date" name="date" value={formData.date} onChange={(e) => handleChange(e, setFormData)} /></label>
-            <label>
-            Categoria
-                <select name="category" value={formData.category} onChange={(e) => handleChange(e, setFormData)}>
-                    <option key={1} value={'Alimentos'}>Alimentos</option>
-                    <option key={2} value={'Bebidas'}>Bebidas</option>
-                </select>
-            </label>
+            <label>Fecha de gasto<input type="date" name="date" value={formData.date} onChange={(e) => handleChange(e, setFormData)} /></label>
+            {formData.expense_type !== 'Gastos Administrativos' && (
+                <label>
+                Categoria
+                    <select name="category" value={formData.category} onChange={(e) => handleChange(e, setFormData)}>
+                        <option key={1} value={'Alimentos'}>Alimentos</option>
+                        <option key={2} value={'Bebidas'}>Bebidas</option>
+                        <option key={3} value={'Salarios'}>Salarios</option>
+                        <option key={3} value={'Otros'}>Otros</option>
+                    </select>
+                </label>
+            )}
             <label>Comprador<input type="text" name="buyer" value={formData.buyer} onChange={(e) => handleChange(e, setFormData)} /></label>
             <label>Concepto<input type="text" name="concept" value={formData.concept} onChange={(e) => handleChange(e, setFormData)} /></label>
             <label>
