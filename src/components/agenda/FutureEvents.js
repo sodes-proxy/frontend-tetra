@@ -61,7 +61,7 @@ const FutureEvents = () => {
         setModalIsOpen(false)
         handleDelete('http://localhost:8000/agenda/delEvento', {
             method: 'DELETE', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ id_event: idEvent })
-        }, () => setEvents(events.filter(event => event.id_event !== id)), onShow, onClose) 
+        }, () => setEvents(events.filter(event => event.id_event !== idEvent)), onShow, onClose) 
         setIdEvent('')
     };
 

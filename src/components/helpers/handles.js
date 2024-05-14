@@ -24,7 +24,7 @@ const handleFetchResponse  = async (response, onShow, onClose, actionOnSuccess) 
     actionOnSuccess()
   } else {
     const data = await response.json();
-    throw { status: response.status, message: response.statusText, data: data };
+    throw { status: response.status, data: data };
   }
 };
 
@@ -34,8 +34,6 @@ const handleSubmit = (e, url, options, formData, possibleValues, onClose, onShow
     
     const trimmedValue = typeof formData[key] === 'string' ? formData[key].trim() : formData[key];
     if (!trimmedValue) {
-      console.log(typeof key)
-      console.log(key)
         openToast(false, 'Favor de llena todos los campos', 4000, onClose, onShow)
         //alert('Por favor llena todos los campos'); // You can replace this with your preferred way of displaying errors
         return;
