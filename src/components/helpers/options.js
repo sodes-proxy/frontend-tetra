@@ -29,6 +29,7 @@ const getList = (url, options,  setData, setFormData, key, internalKey, errorMsg
           })
           .catch(error => {
             console.error(error, key)
+            setData([])
             openToast(false, errorMsg, 2000, onClose, onShow)
           });
 }

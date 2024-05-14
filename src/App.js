@@ -13,7 +13,8 @@ import Login from './components/auth/Login';
 import RequireAuth from './components/auth/RequireAuth';
 import AddExpense from './components/finanzas/AddExpense';
 import Admin from './components/admin/Admin';
-import { AdminOptions } from './components/admin/AdminOptions';
+import { AdminOptions }  from './components/admin/AdminOptions';
+import ViewFinanzas from './components/finanzas/ViewFinanzas';
 import React from 'react';
 
 const App = () => {
@@ -45,6 +46,7 @@ const RouterContent = () => {
         <Route path='/agregar-gasto/:id' element={<RequireAuth><AddExpense /></RequireAuth>} />
         <Route path='/administrar-usuarios' element={<RequireAuth> <Admin/> </RequireAuth>} />
         <Route path='/administrar-opciones' element={<RequireAuth> <AdminOptions/> </RequireAuth>} />
+        <Route path='/finanzas' element={<RequireAuth> <ViewFinanzas/> </RequireAuth>} />
       </Routes>
     </>
   );

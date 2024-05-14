@@ -15,6 +15,7 @@ const AddExpense = () => {
     const onClose =  () => { setShowToast(false) };
 
 
+
     const [formData, setFormData] = useState({
         id_event: event.id_event || '',
         buyer: '',
@@ -24,6 +25,7 @@ const AddExpense = () => {
         quantity: '',
         expense_type: 'Inventario',
         date: '',
+        ...(event ? {id_event: event.id_event, expense_type: 'Inventario',}: {id_event:'GENERAL', expense_type: id} )
     });
 
     const handleAdd = (e) => {
@@ -51,9 +53,18 @@ const AddExpense = () => {
     return (
         <div className="edit-event-container">
         <form onSubmit={handleAdd}>
-            <label>Estas agregando un gasto al evento {formData.id_event}</label>
-            <label>Nombre: {event.name}</label>
-            <label>La fecha del evento es {eventDate}</label>
+            {formData.id_event === 'GENERAL' ? (
+                <label>
+                    Estas agregando un {formData.expense_type}
+                </label>
+            ) : (
+                <React.Fragment>
+                     <label>Estas agregando un gasto al evento {formData.id_event}</label>
+                    <label>Nombre: {event.name}</label>
+                    <label>La fecha del evento es {eventDate}</label>
+                </React.Fragment>
+            )}
+            
             <label>Fecha de compra<input type="date" name="date" value={formData.date} onChange={(e) => handleChange(e, setFormData)} /></label>
             <label>
             Categoria
