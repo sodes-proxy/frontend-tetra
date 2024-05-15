@@ -6,7 +6,7 @@ import { openToast } from '../helpers/toast';
 import { extractNumericValue } from "../helpers/numbers";
 
 const AssignExpense = () => {
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
     const { state } = useLocation();
     const expense = state.expense;
 
@@ -72,8 +72,17 @@ const AssignExpense = () => {
                 'id_expense': formData.id_expense,
                 'id_event': formData.id_event
             })
-        }, formData, ['portion'], onClose, onShow, () => {})
+        }, formData, ['portion'], onClose, onShow, () => {navigate('/finanzas')})
     }
+
+    const isExpensePresent = (event, id_expense) => {
+        for (const expense of event.expenses) {
+            if (expense.id_expense === id_expense) {
+                return expense.portion; // Found the expense
+            }
+        }
+        return 0; // Expense not found
+    };
     
     return(
 
@@ -133,6 +142,7 @@ const AssignExpense = () => {
                 <p>El evento seleccionado es: {selected.id_event}</p>
                 <p>La fecha es {selected.day}/{selected.month}/{selected.year}</p>
                 <p>Cantidad disponible: {expense.available.toLocaleString()}</p>
+                <p>Cantidad asignada: {isExpensePresent(selected, expense.id_expense).toLocaleString()}</p>
                 <form onSubmit={handleAssign}>
                     <label>
                         Cantidad a asignar

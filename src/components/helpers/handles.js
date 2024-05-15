@@ -61,5 +61,12 @@ const handleDelete = (url, options, setData, onShow, onClose) => {
   )
 }
 
-export { handleChange, handleNumberText, handleFetchResponse, handleSubmit, handleDelete };
+const handleResponseWithNumbers = (string) => {
+  const formattedString = string.replace(/\b\d+(\.\d+)?\b/g, function(match) {
+    return parseFloat(match).toLocaleString(undefined, { maximumFractionDigits: 2 });
+});
+return formattedString;
+}
+
+export { handleChange, handleNumberText, handleFetchResponse, handleSubmit, handleDelete, handleResponseWithNumbers };
 

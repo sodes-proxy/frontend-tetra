@@ -1,9 +1,12 @@
 import { toast } from "react-toastify";
+import { handleResponseWithNumbers} from './handles'
+
 const openToast = (isGood, message, autoClose, actionOnClose, setToast) => {
     //setShowToast(true); // Activar la visualización del toast
+    const formattedResponse = handleResponseWithNumbers(message);
     setToast()
     if(isGood){
-      toast.success(message, {
+      toast.success(formattedResponse, {
         position: "top-center",
         autoClose: autoClose,
         hideProgressBar: false,
@@ -15,7 +18,7 @@ const openToast = (isGood, message, autoClose, actionOnClose, setToast) => {
     });
     }
     else{
-      toast.error(message, {
+      toast.error(formattedResponse, {
         position: "top-center",
         autoClose: autoClose,
         hideProgressBar: false,
