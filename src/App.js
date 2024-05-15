@@ -16,6 +16,7 @@ import Admin from './components/admin/Admin';
 import { AdminOptions }  from './components/admin/AdminOptions';
 import ViewFinanzas from './components/finanzas/ViewFinanzas';
 import AssignExpense from './components/finanzas/AssignExpense';
+import ProfitMargin from './components/finanzas/ProfitMargin';
 import React from 'react';
 
 const App = () => {
@@ -49,6 +50,7 @@ const RouterContent = () => {
         <Route path='/administrar-opciones' element={<RequireAuth> <AdminOptions/> </RequireAuth>} />
         <Route path='/finanzas' element={<RequireAuth> <ViewFinanzas/> </RequireAuth>} />
         <Route path='/asignar-gasto' element={<RequireAuth> <AssignExpense/> </RequireAuth>} />
+        <Route path='/margen-resultados' element={<RequireAuth> <ProfitMargin/> </RequireAuth>} />
       </Routes>
     </>
   );

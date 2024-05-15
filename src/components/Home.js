@@ -4,11 +4,9 @@ import './Home.css';
 
 const buttonsData = [
   { text: "Crear Evento", path: "/crear-evento", roles: ['admin', 'secretary'] },
-  { text: "Registrar Abono", path: "/registrar-abono", roles: ['admin', 'finance'] },
   { text: "Agenda Evento", path: "/agenda-eventos", roles: ['all'] },
   { text: "Finanzas", path: "/finanzas", roles: ['admin', 'finance'] },
-  { text: "Eliminar Evento", path: "/eliminar-evento", roles: ['admin', 'secretary'] },
-  { text: "Reportar Compra", path: "/reportar-compra", roles: ['admin', 'finance'] },
+  { text: "Margen de Resultados", path: "/margen-resultados", roles: ['admin', 'finance'] },
   { text: "Historial Eventos", path: "/historial-eventos", roles: ['all'] },
   { text: "Administrar Usuarios", path: "/administrar-usuarios", roles: ['admin'] },
   { text: "Administrar Opciones", path: "/administrar-opciones", roles: ['admin'] },
