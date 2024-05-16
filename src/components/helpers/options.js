@@ -13,8 +13,9 @@ const getList = (url, options,  setData, setFormData, key, internalKey, errorMsg
           }
           })
             .then(data => {
-              if (data && data[key] && Array.isArray(data[key])) {
+              if (data && data[key] && (Array.isArray(data[key]) || typeof data[key] === 'object')) {
                 // Extract the types array from the response data and set state
+              console.log(data[key])
                 setData(data[key]);
                 if (setFormData !== null){
                   setFormData(prevState => ({
