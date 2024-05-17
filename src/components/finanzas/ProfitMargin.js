@@ -3,20 +3,19 @@ import Searcher from "../agenda/Searcher";
 import { getList } from "../helpers/options";
 import { handleNumberText, isEmptyObject } from "../helpers/handles";
 import { getValueInNumber, extractNumericValue } from "../helpers/numbers";
-
+import './ProfitMargin.css';
 
 const ProfitMargin = () => {
     const [formData, setFormData] = useState({});
-    const [formattedData, setFormattedData] = useState({});
+    const [formattedData, setFormattedData] = useState({'state':'Pendiente', 'furniture':'$0'});
     const [showToast, setShowToast] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const onShow =  () => { setShowToast(true) };
     const onClose =  () => { setShowToast(false) };
     const [idEvent, setIdEvent] = useState('');
     const [events, setEvents] = useState([]);
-    const [marginProfit, setMarginProfit] = useState({});
+    const [marginProfit, setMarginProfit] = useState({'utility':0});
 
-    //onst 
 
     const getCount = () => {
         getList('http://127.0.0.1:8000/finanzas/getGasto', {
@@ -24,45 +23,43 @@ const ProfitMargin = () => {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
             'id_event': idEvent
-        })}, setMarginProfit, setFormData, 'expenses', 'margin', `No se encontro los datos de abonos y gastos del evento ${idEvent}`, onShow, onClose)
+        })}, setMarginProfit, setFormData, 'expenses', 'margin', `No se encontro los datos de payments y gastos del evento ${idEvent}`, onShow, onClose)
     }
 
     useEffect(() => {
-        if (idEvent !== ''){
-            getCount();
-        }
+        if (idEvent !== '') getCount();
     },[idEvent])
 
     const getSumPrice = (price, salonPrice) => {
         let suma = 0;
-        console.log()
-        if (salonPrice !== '$'){
-            suma += Number.parseFloat(extractNumericValue(salonPrice));
-        }
-        if (price !== '$'){
-            
-            suma += Number.parseFloat(extractNumericValue(price));
+        if (salonPrice !== '$') suma += Number.parseFloat(extractNumericValue(salonPrice));
+        if (price !== '$') suma += Number.parseFloat(extractNumericValue(price));
+        return suma;
+    }
+
+    const getSumOfExpenses = () => {
+        const keys = ['food', 'beverages', 'salaries', 'furniture', 'others'];
+        let suma = 0;
+        for (let i = 0; i < keys.length; i++) {
+            if (keys[i] in formattedData && formattedData[keys[i]] !== '$') suma += Number.parseFloat(extractNumericValue(formattedData[keys[i]]))
         }
         return suma;
     }
 
-    const getSumAbonos = (key) => {
+    const getSumPayments = (key) => {
         let suma = 0;
         for (let i = 0; i < formData[key].length; i++) {
-            if (formattedData[key+i.toString()] !== '$'){
-                suma += Number.parseFloat(extractNumericValue(formattedData[key+i.toString()]));
-            }
-            
+            if (formattedData[key+i.toString()] !== '$') suma += Number.parseFloat(extractNumericValue(formattedData[key+i.toString()]));    
         }
         return suma;
     }
 
-    const getMargin = (price, salonPrice) => {
-        return getSumAbonos('abonos') / getSumPrice(price, salonPrice) * 100;
+    const getMargin = (price) => {
+        return getSumPayments('payments') / Number.parseFloat(extractNumericValue(price)) * 100;
     }
 
     useEffect(() => {
-        formattedData['precio_salon'] = '0'
+        formattedData['salonPrice'] = '0'
         if (!isEmptyObject(formData)){
             for (const key in formData) {
                 //console.log(getValueInNumber(formData[key], true))
@@ -73,12 +70,19 @@ const ProfitMargin = () => {
                     }
                 }
                 else{
-
+                    setFormattedData(prevState => ({...prevState, [key]:getValueInNumber(formData[key].toString(), true, true)}))
                 }
-                setFormattedData(prevState => ({...prevState, [key]:getValueInNumber(formData[key].toString(), true, true)}))
+                
             }
         }
     }, [formData])
+
+    useEffect (() => {
+        if (formData.payments && 'payments'+(formData.payments.length-1).toString() in formattedData){
+            setFormattedData(prevState => ({...prevState, ['margin']:getMargin(formattedData.price)}))
+            setMarginProfit(prevState=>({...prevState, ['utility']: Number.parseFloat(extractNumericValue(formattedData['price'])) - getSumOfExpenses()}))
+        }
+    }, [formattedData])
 
     const buttons = [{'className':'payment', 'action':(e) => {setIdEvent(e.id_event)}, 'display':'Seleccionar'}];
     return (
@@ -91,60 +95,59 @@ const ProfitMargin = () => {
                 <form onSubmit={(e)=>{e.preventDefault();}}>
                 <label>
                     Alimentos
-                    <input type="text" name='Alimentos' onChange={(e) => handleNumberText(e, setFormattedData, true,true)} value={formattedData.Alimentos}/>
+                    <input type="text" name='food' disabled value={formattedData.food}/>
                 </label>
                 <label>
                     Bebidas
-                    <input type="text" name='Bebidas' onChange={(e) => handleNumberText(e, setFormattedData, true,true)} value={formattedData.Bebidas}/>
+                    <input type="text" name='beverages' disabled value={formattedData.beverages}/>
                 </label>
                 <label>
                     Salarios
-                    <input type="text" name='Salarios' onChange={(e) => handleNumberText(e, setFormattedData, true,true)} value={formattedData.Salarios}/>
+                    <input type="text" name='salaries' onChange={(e) => handleNumberText(e, setFormattedData, true,true)} value={formattedData.salaries}/>
                 </label>
-
+                <label>
+                    Inmobiliario
+                    <input type="text" name='furniture' onChange={(e) => handleNumberText(e, setFormattedData, true,true)} value={formattedData.furniture}/>
+                </label>
                 <label>
                     Otros
-                    <input type="text" name='Otros' onChange={(e) => handleNumberText(e, setFormattedData, true,true)} value={formattedData.Otros}/>
+                    <input type="text" name='others' onChange={(e) => handleNumberText(e, setFormattedData, true,true)} value={formattedData.others}/>
                 </label>
                 <label>
                     Precio del Evento
-                    <input type="text" name='precio' onChange={(e) => handleNumberText(e, setFormattedData, true, true)} value={formattedData.precio}/>
+                    <input type="text" name='price' disabled value={formattedData.price}/>
                 </label>
                 <label>
                     Precio del Salon
-                    <input type="text" name='precio_salon' onChange={(e) => handleNumberText(e, setFormattedData, true, true)} value={formattedData.precio_salon}/>
+                    <input type="text" name='salonPrice' onChange={(e) => handleNumberText(e, setFormattedData, true, true)} value={formattedData.salonPrice}/>
                 </label>
-                {formData.abonos && Array.isArray(formData.abonos) && formData.abonos.map((abono, index) => (
+                {formData.payments && Array.isArray(formData.payments) && formData.payments.map((abono, index) => (
                     <label key={index}>
                         {index == 0 ? 'Anticipo': 'Pago ' + index.toString() }
-                        <input type="text" name={'abonos' + index.toString()} value={formattedData['abonos' + index.toString()]} onChange={(e)=>{handleNumberText(e, setFormattedData, true, true)}} />
+                        <input type="text" name={'payments' + index.toString()} disabled value={formattedData['payments' + index.toString()]} />
                     </label>
                 ))}
-                
-                {formData.abonos && 'abonos'+(formData.abonos.length-1).toString() in formattedData && (
+                {formData.payments && 'payments'+(formData.payments.length-1).toString() in formattedData && (
                     <React.Fragment>
                     <span>
-                        Estado del Pago {getMargin(formattedData.precio, formattedData.precio_salon) >= 100.0? 'Completado' :'Pendiente'}
+                        Estado del Pago 
+                        <p className={formattedData['margin'] >= 100.0 ? 'green-text' : 'red-text'}>{formattedData['margin'] >= 100.0 ? 'Completado' : 'Pendiente'}</p>
                     </span>
                     <span>
-                        Costo del Evento ${getSumPrice(formattedData.precio, formattedData.precio_salon).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                        Coste del Evento ${getSumOfExpenses().toLocaleString(undefined, { maximumFractionDigits: 2 })}
                     </span>
                     <span>
-                        Saldo ${getSumAbonos('abonos').toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                        Utilidad: ${marginProfit.utility ? (marginProfit.utility).toLocaleString(undefined, { maximumFractionDigits: 2 }): null}
                     </span>
                     <span>
-                        Margen: {getMargin(formattedData.precio, formattedData.precio_salon).toLocaleString(undefined, { maximumFractionDigits: 2 })}%
+                        Margen: {marginProfit.utility ? formattedData['margin'].toLocaleString(undefined, { maximumFractionDigits: 2 }):null}%
                     </span>
                     </React.Fragment>
                 )}
-                
                 <button type="submit" className="submit-button">Concluir evento</button>
                 </form>
-                
-
             </React.Fragment>}
         </div>
-        
     );
 }
 

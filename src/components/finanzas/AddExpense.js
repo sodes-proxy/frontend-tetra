@@ -72,12 +72,10 @@ const AddExpense = () => {
                     <select name="category" value={formData.category} onChange={(e) => handleChange(e, setFormData)}>
                         <option key={1} value={'Alimentos'}>Alimentos</option>
                         <option key={2} value={'Bebidas'}>Bebidas</option>
-                        <option key={3} value={'Salarios'}>Salarios</option>
-                        <option key={3} value={'Otros'}>Otros</option>
                     </select>
                 </label>
             )}
-            <label>Comprador<input type="text" name="buyer" value={formData.buyer} onChange={(e) => handleChange(e, setFormData)} /></label>
+            <label>Responsable<input type="text" name="buyer" value={formData.buyer} onChange={(e) => handleChange(e, setFormData)} /></label>
             <label>Concepto<input type="text" name="concept" value={formData.concept} onChange={(e) => handleChange(e, setFormData)} /></label>
             <label>
                 Cantidad

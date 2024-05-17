@@ -27,7 +27,7 @@ const AssignExpense = () => {
     const [formData, setFormData] = useState({
         id_event: '',
         id_expense: expense.id_expense,
-        portion: 0
+        portion: ''
     });
 
       const [showToast, setShowToast] = useState(false);
