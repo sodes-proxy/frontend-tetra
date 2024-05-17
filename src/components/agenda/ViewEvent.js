@@ -129,7 +129,7 @@ const ViewEvent = () => {
                                 <td>{payment.id_ticket}</td>
                                 <td>{payment.payer}</td>
                                 <td>{payment.day}/{payment.month}/{payment.year}</td>
-                                <td>${payment.quantity.toLocaleString()}</td>
+                                <td>${payment.quantity.toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
                                 <td><button onClick={() => setIdTicket(payment.id_ticket)} className='delete'>Eliminar</button></td>
                             </tr>
                         ))
@@ -166,8 +166,8 @@ const ViewEvent = () => {
                                 <td>{expenses.category}</td>
                                 <td>{expenses.concept}</td>
                                 <td>{expenses.buyer}</td>
-                                <td>{expenses.portion.toLocaleString()}</td>
-                                <td>${expenses.amount.toLocaleString()}</td>
+                                <td>{expenses.portion.toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
+                                <td>${expenses.amount.toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
                                 <td >
                                 <button className="delete" onClick={() => setIdExpense(expenses.id_expense)}>Eliminar</button>
                                 </td> 

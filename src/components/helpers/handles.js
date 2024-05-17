@@ -10,11 +10,11 @@ const handleChange = (e, setFormData) => {
     }));
   };
 
-  const handleNumberText = (e, setFormData, isDollarSign) => {
-    setFormData(prevState => ({
-        ...prevState,
-        [e.target.name]: getValueInNumber(e.target.value, isDollarSign)
-    }));
+const handleNumberText = (e, setFormData, isDollarSign, canBeZero) => {
+  setFormData(prevState => ({
+      ...prevState,
+      [e.target.name]: getValueInNumber(e.target.value, isDollarSign, canBeZero)
+  }));
 };
 
 const handleFetchResponse  = async (response, onShow, onClose, actionOnSuccess) => {
@@ -68,5 +68,9 @@ const handleResponseWithNumbers = (string) => {
 return formattedString;
 }
 
-export { handleChange, handleNumberText, handleFetchResponse, handleSubmit, handleDelete, handleResponseWithNumbers };
+const isEmptyObject = (obj) => {
+  return Object.keys(obj).length === 0;
+};
+
+export { handleChange, handleNumberText, handleFetchResponse, handleSubmit, handleDelete, handleResponseWithNumbers, isEmptyObject };
 

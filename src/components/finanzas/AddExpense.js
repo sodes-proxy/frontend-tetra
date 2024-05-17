@@ -81,11 +81,11 @@ const AddExpense = () => {
             <label>Concepto<input type="text" name="concept" value={formData.concept} onChange={(e) => handleChange(e, setFormData)} /></label>
             <label>
                 Cantidad
-                <input type="text" name="quantity" value={formData.quantity} onChange={(e) => handleNumberText(e, setFormData, false)} />
+                <input type="text" name="quantity" value={formData.quantity} onChange={(e) => handleNumberText(e, setFormData, false, false)} />
             </label>
             <label>
                 Monto ($)
-                <input type="text" name="amount" value={formData.amount} onChange={(e) => handleNumberText(e, setFormData, true)} />
+                <input type="text" name="amount" value={formData.amount} onChange={(e) => handleNumberText(e, setFormData, true, false)} />
             </label> 
             <button type="submit" className="submit-button">Agregar Gasto</button>
         </form>

@@ -15,14 +15,18 @@ const getList = (url, options,  setData, setFormData, key, internalKey, errorMsg
             .then(data => {
               if (data && data[key] && (Array.isArray(data[key]) || typeof data[key] === 'object')) {
                 // Extract the types array from the response data and set state
-              console.log(data[key])
                 setData(data[key]);
                 if (setFormData !== null){
-                  setFormData(prevState => ({
-                    ...prevState,
-                    [internalKey]: data[key][0]
-                  }));
-                }
+                  if (Array.isArray(data[key])){
+                    setFormData(prevState => ({
+                      ...prevState,
+                      [internalKey]:data[key][0]
+                    }));
+                  }
+                  else if (typeof data[key] === 'object'){
+                    setFormData(data[key])
+                    }
+                  }
               } else {
                 console.error('Invalid data format:', data);
                 openToast(false, errorMsg, 2000, onClose, onShow)

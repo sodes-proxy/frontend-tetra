@@ -24,10 +24,10 @@ const EditEvent = () => {
         id_event: event.id_event || '',
         eventType: event.type || '',
         eventDate: new Date(event.year, event.month - 1, event.day).toISOString().split('T')[0] || '',
-        price: getValueInNumber(event.cost.toString(), true) || '$',
+        price: getValueInNumber(event.cost.toString(), true, false) || '$',
         location: event.location || '',
         attendees: event.num_of_people || '',
-        advancePayment: getValueInNumber(event.upfront.toString(), true) || '$'
+        advancePayment: getValueInNumber(event.upfront.toString(), true, true) || '$'
     });
 
      // get event types

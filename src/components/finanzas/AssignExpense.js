@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { handleChange, handleNumberText, handleSubmit } from "../helpers/handles";
+import { handleChange, handleNumberText, handleSubmit, isEmptyObject } from "../helpers/handles";
 import { getList } from '../helpers/options';
 import { openToast } from '../helpers/toast';
 import { extractNumericValue } from "../helpers/numbers";
@@ -59,9 +59,7 @@ const AssignExpense = () => {
         () => openToast(false, errorMsg, 2000, onClose, onShow))
     }, []);
 
-    const isEmptyObject = (obj) => {
-        return Object.keys(obj).length === 0;
-    };
+    
    
     const handleAssign = (e) => {
         handleSubmit(e, 'http://127.0.0.1:8000/finanzas/modifyGasto', {
@@ -146,7 +144,7 @@ const AssignExpense = () => {
                 <form onSubmit={handleAssign}>
                     <label>
                         Cantidad a asignar
-                        <input type="text" name="portion" value={formData.portion} onChange={(e) => handleNumberText(e, setFormData, false)}/>
+                        <input type="text" name="portion" value={formData.portion} onChange={(e) => handleNumberText(e, setFormData, false, true)}/>
                     </label>
                     <button type="submit" className="submit-button">Asignar Gasto</button>
                 </form>

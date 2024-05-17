@@ -9,7 +9,7 @@ const EventForm = ({ formData, handleChange, eventTypeOptions, eventLocations, h
         </label>
         <label>
           Clientes (razón de evento)
-          <input type="text" name="clientReason" value={formData.clientReason} onChange={(e) => handleChange(e, setFormData)} />
+          <input type="text" name="clientReason" value={formData.clientReason} onChange={(e) => handleChange(e, setFormData)} />``
         </label>
         <label>
           Tipo de evento
@@ -37,15 +37,15 @@ const EventForm = ({ formData, handleChange, eventTypeOptions, eventLocations, h
         </label>
         <label>
           No. Asistentes
-          <input type="number" min={1} name="attendees" value={formData.attendees} onChange={(e) => handleChange(e, setFormData)} placeholder='Número de asistentes'/>
+          <input type="number" min={1} name="attendees" value={formData.attendees} onChange={(e) => handleNumberText(e, setFormData, false, false)} placeholder='Número de asistentes'/>
         </label>
         <label>
           Precio del evento
-          <input type="text" name="price" value={formData.price} onChange={(e) => handleNumberText(e, setFormData, true)} placeholder='Precio $'/>
+          <input type="text" name="price" value={formData.price} onChange={(e) => handleNumberText(e, setFormData, true, false)} placeholder='Precio $'/>
         </label>
         <label>
           Anticipo del evento
-          <input type="text" name="advancePayment" value={formData.advancePayment} onChange={(e) => handleNumberText(e, setFormData, true)} placeholder='Anticipo $' />
+          <input type="text" name="advancePayment" value={formData.advancePayment} onChange={(e) => handleNumberText(e, setFormData, true, true)} placeholder='Anticipo $' />
         </label>
         <button type="submit" className="submit-button">{msgBtn}</button>
       </form>

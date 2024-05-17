@@ -48,7 +48,7 @@ const AddPayment = () => {
             </label>
             <label>
                 La cantidad de
-                <input type="text" name="quantity" value={formData.quantity} onChange={(e) => handleNumberText(e, setFormData, true)} />
+                <input type="text" name="quantity" value={formData.quantity} onChange={(e) => handleNumberText(e, setFormData, true, false)} />
             </label>
             <button type="submit" className="submit-button">Agregar Abono</button>
         </form>
