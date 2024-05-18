@@ -1,69 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { handleDelete } from '../helpers/handles';
 import './FutureEvents.css';
+import Searcher from './Searcher';
+import { TrentoModal } from '../helpers/modal';
 
 const FutureEvents = () => {
-    const [events, setEvents] = useState([]);
     const navigate = useNavigate();
-    
+    const [showToast, setShowToast] = useState(false);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const onShow =  () => { setShowToast(true) };
+    const onClose =  () => { setShowToast(false) };
+    const [idEvent, setIdEvent] = useState('');
+    const [events, setEvents] = useState([]);
 
-    useEffect(() => {
-        const date = new Date();
-        fetch('http://localhost:8000/agenda/verAgenda', {
-            method: 'OPTIONS',
-            headers: {
-                'Content-Type': 'application/json'
+    const buttons = [{'className':'payment', 'action':() => {}, 'display':'Revertir', 'state':['completado']},
+        {'className':'edit', 'action':() => {}, 'display':'Descargar', 'state':['cancelado', 'completado']},
+    ]; 
 
-            },
-            body: JSON.stringify({'day': date.getDay(), 'month': date.getMonth()+1, 
-            'year': date.getFullYear(), isFuture: false})
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.events && data.events.length > 0) {
-                setEvents(data.events);
-            } else {
-                setEvents([]);
-                // Handle empty response: Display a message or perform any other action
-                console.log('No events found.');
-            }
-        })
-        .catch(error => console.error('Error fetching events:', error));
-    }, []);
+      useEffect(() => {
+        if (idEvent !== '' && idEvent != undefined) {setModalIsOpen(true); console.log(idEvent)}
+      }, [idEvent])
 
+    const handleEvent = (event, url) => {
+        navigate(`/${url}/${event.id_event}`, { state: { event } });
+    };
 
+    const handleDel = () => {
+        console.log(idEvent)
+        setModalIsOpen(false)
+        handleDelete('http://localhost:8000/agenda/delEvento', {
+            method: 'DELETE', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ id_event: idEvent })
+        }, () => setEvents(events.filter(event => event.id_event !== idEvent)), onShow, onClose) 
+        setIdEvent('')
+    };
 
+    const cancelDelete =  () => {
+        setModalIsOpen(false);
+        setIdEvent('')
+    }
 
     return (
         <div className="future-events-container">
-            <table className="future-events-table">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Fecha</th>
-                        <th>Ubicación</th>
-                        <th>Tipo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                    {events.length === 0 ? (
-                        <tr>
-                            <td colSpan="4">No hay eventos disponibles.</td>
-                        </tr>
-                    ) : (
-                        events.map(event => (
-                            <tr key={event.id_event}>
-                                <td>{event.name}</td>
-                                <td>{`${event.day}/${event.month}/${event.year}`}</td>
-                                <td>{event.location}</td>
-                                <td>{event.type}</td>
-                            </tr>
-                        ))
-                    )}
-
-                </tbody>
-            </table>
+            <TrentoModal isOpen={modalIsOpen} onOk={() => {setModalIsOpen(false)}} onCancel={()=>setModalIsOpen(false)} 
+                title={'Deseas revertir el margen de resultados'} question={'Estas a punto de cancelar el margen de resultados'} buttonOk={'Concluir'}
+                butttonCancel={'Cancelar'}
+            />
+            <Searcher onClose={onClose} onShow={onShow} buttons={buttons} events={events} setEvents={setEvents} state={['completado', 'cancelado']}/>
         </div>
     );
 };

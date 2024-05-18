@@ -14,9 +14,9 @@ const FutureEvents = () => {
     const [idEvent, setIdEvent] = useState('');
     const [events, setEvents] = useState([]);
 
-    const buttons = [{'className':'payment', 'action':(e) => handleEvent(e, 'ver-evento'), 'display':'Ver'},
-        {'className':'edit', 'action':(e) => handleEvent(e, 'editar-evento'), 'display':'Editar'},
-        {'className':'delete', 'action':(e) => {setIdEvent(e.id_event)}, 'display':'Eliminar'}
+    const buttons = [{'className':'payment', 'action':(e) => handleEvent(e, 'ver-evento'), 'display':'Ver', 'state':['pendiente']},
+        {'className':'edit', 'action':(e) => handleEvent(e, 'editar-evento'), 'display':'Editar', 'state':['pendiente']},
+        {'className':'delete', 'action':(e) => {setIdEvent(e.id_event)}, 'display':'Eliminar', 'state':['pendiente']}
     ]; 
 
       useEffect(() => {

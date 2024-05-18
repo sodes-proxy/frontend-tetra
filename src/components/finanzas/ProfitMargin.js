@@ -6,6 +6,7 @@ import { handleNumberText, handleSubmit, isEmptyObject } from "../helpers/handle
 import { getValueInNumber, extractNumericValue } from "../helpers/numbers";
 import './ProfitMargin.css';
 import { TrentoModal } from "../helpers/modal";
+import { openToast } from "../helpers/toast";
 
 
 const ProfitMargin = () => {
@@ -18,7 +19,7 @@ const ProfitMargin = () => {
     const onClose =  () => { setShowToast(false) };
     const [idEvent, setIdEvent] = useState('');
     const [events, setEvents] = useState([]);
-    const [marginProfit, setMarginProfit] = useState({'utility':0, 'marginProfit':0, 'cost':0});
+    const [marginProfit, setMarginProfit] = useState({'utility':0, 'marginProfit':-1, 'cost':0});
 
 
     const getCount = () => {
@@ -88,30 +89,36 @@ const ProfitMargin = () => {
         if (formData.payments && 'payments'+(formData.payments.length-1).toString() in formattedData){
             setMarginProfit(prevState=>({...prevState, 
                 ['utility']: getUtility(),
-                ['margin']:getMargin(),
+                ['marginProfit']: getSumOfExpenses() === 0 ? -1 : getMargin(),
                 ['cost']:getSumOfExpenses()
             }))
         }
     }, [formattedData])
 
     const handleSetMarginProfit = (e) => {
-        handleSubmit(e, 'http://127.0.0.1:8000/finanzas/guardarEstadosResultados', {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                ...formData,
-                'id_event': idEvent,
-                'salaries': Number.parseFloat(extractNumericValue(formattedData.salaries)),
-                'others': Number.parseFloat(extractNumericValue(formattedData.others)),
-                'furniture': Number.parseFloat(extractNumericValue(formattedData.others)),
-                'salonPrice': Number.parseFloat(extractNumericValue(formattedData.salonPrice)),
-                'utility': marginProfit.utility,
-                'margin': marginProfit.margin,
-                'cost': marginProfit.cost
-            })}, formattedData, ['salaries','furniture','others','salonPrice'], onClose, onShow, () => navigate('/margen-resultados'))
+        if (marginProfit.marginProfit === -1 ){
+            openToast(false, 'El margen no puede ser calculado, favor de ingresar gastos', 4000, () => {}, setShowToast)
+        }
+        else {
+            handleSubmit(e, 'http://127.0.0.1:8000/finanzas/guardarEstadosResultados', {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    ...formData,
+                    'id_event': idEvent,
+                    'salaries': Number.parseFloat(extractNumericValue(formattedData.salaries)),
+                    'others': Number.parseFloat(extractNumericValue(formattedData.others)),
+                    'furniture': Number.parseFloat(extractNumericValue(formattedData.others)),
+                    'salonPrice': Number.parseFloat(extractNumericValue(formattedData.salonPrice)),
+                    'utility': marginProfit.utility,
+                    'margin': marginProfit.marginProfit,
+                    'cost': marginProfit.cost
+                })}, formattedData, ['salaries','furniture','others','salonPrice'], onClose, onShow, () => navigate('/margen-resultados'))
+        }
+       
     }
 
-    const buttons = [{'className':'payment', 'action':(e) => {setIdEvent(e.id_event)}, 'display':'Seleccionar'}];
+    const buttons = [{'className':'payment', 'action':(e) => {setIdEvent(e.id_event)}, 'display':'Seleccionar', 'state':['pendiente']}];
     
     const checkPayments = (e) => {
         e.preventDefault();
@@ -182,7 +189,7 @@ const ProfitMargin = () => {
                         Utilidad: ${marginProfit.utility ? (marginProfit.utility).toLocaleString(undefined, { maximumFractionDigits: 2 }): null}
                     </span>
                     <span>
-                        Margen: {marginProfit.utility ? marginProfit.margin.toLocaleString(undefined, { maximumFractionDigits: 2 }):null}%
+                        Margen: {marginProfit.utility ? marginProfit.marginProfit.toLocaleString(undefined, { maximumFractionDigits: 2 }):null}%
                     </span>
                     </React.Fragment>
                 )}

@@ -66,7 +66,7 @@ const Searcher = ({onShow, onClose, buttons, events, setEvents, state}) => {
             )}
             <table className="future-events-table">
                 <thead>
-                    <tr>{['Nombre', 'Fecha', 'Ubicación', 'Acciones'].map((header, index) => {
+                    <tr>{['Nombre', 'Fecha', 'Ubicación', 'Estado', 'Acciones'].map((header, index) => {
                         return <th key={index}>{header}</th>;
                     })}</tr>
                 </thead>
@@ -76,12 +76,20 @@ const Searcher = ({onShow, onClose, buttons, events, setEvents, state}) => {
                     ) : (
                         events.map(event => (
                             <tr key={event.id_event}>
-                                {[event.name, `${event.day}/${event.month}/${event.year}`, event.location].map((value, index) => {
+                                {[event.name, `${event.day}/${event.month}/${event.year}`, event.location, event.state].map((value, index) => {
                                     return <td key={index}>{value}</td>;
                                 })}
                                 <td>
-                                {buttons.map(button => (
-                                    <button className={button.className} onClick={() => button.action(event)}>{button.display}</button>
+                                {buttons.map((button, index) => (
+                                    button.state.includes(event.state) ? (
+                                        <button 
+                                        key={index} 
+                                        className={button.className} 
+                                        onClick={() => button.action(event)}
+                                        >
+                                        {button.display}
+                                        </button>
+                                    ) : null
                                 ))}
                                 </td>
                             </tr>
