@@ -180,7 +180,7 @@ const ProfitMargin = () => {
                     <React.Fragment>
                     <span>
                         Estado del Pago 
-                        <p className={formattedData['margin'] >= 100.0 ? 'green-text' : 'red-text'}>{formattedData['margin'] >= 100.0 ? 'Completado' : 'Pendiente'}</p>
+                        <p className={getSumPayments('payments') >= getSumPrice(formattedData.price, formattedData.salonPrice) ? 'green-text' : 'red-text'}>{getSumPayments('payments') >= getSumPrice(formattedData.price, formattedData.salonPrice) ? 'Completado' : 'Pendiente'}</p>
                     </span>
                     <span>
                         Coste del Evento ${marginProfit.utility ? marginProfit.cost.toLocaleString(undefined, { maximumFractionDigits: 2 }):null}
