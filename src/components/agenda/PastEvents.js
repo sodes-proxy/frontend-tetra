@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { handleDelete } from '../helpers/handles';
+import { handleDelete, handleSubmit } from '../helpers/handles';
 import './FutureEvents.css';
 import Searcher from './Searcher';
 import { TrentoModal } from '../helpers/modal';
@@ -14,7 +14,7 @@ const FutureEvents = () => {
     const [idEvent, setIdEvent] = useState('');
     const [events, setEvents] = useState([]);
 
-    const buttons = [{'className':'payment', 'action':() => {}, 'display':'Revertir', 'state':['completado']},
+    const buttons = [{'className':'payment', 'action':(e) => {setIdEvent(e.id_event)}, 'display':'Revertir', 'state':['completado']},
         {'className':'edit', 'action':() => {}, 'display':'Descargar', 'state':['cancelado', 'completado']},
     ]; 
 
@@ -26,14 +26,13 @@ const FutureEvents = () => {
         navigate(`/${url}/${event.id_event}`, { state: { event } });
     };
 
-    const handleDel = () => {
-        console.log(idEvent)
+    const handleRevert = (e) => {
+        handleDelete('http://localhost:8000/finanzas/revertirMargenResultados', {
+            method: 'DELETE', headers: {'Content-Type': 'application/json'}, 
+            body: JSON.stringify({ id_event: idEvent })
+        }, () => setEvents(events.filter(event => event.id_event !== idEvent)), onShow, onClose)
         setModalIsOpen(false)
-        handleDelete('http://localhost:8000/agenda/delEvento', {
-            method: 'DELETE', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ id_event: idEvent })
-        }, () => setEvents(events.filter(event => event.id_event !== idEvent)), onShow, onClose) 
-        setIdEvent('')
-    };
+    }
 
     const cancelDelete =  () => {
         setModalIsOpen(false);
@@ -42,7 +41,7 @@ const FutureEvents = () => {
 
     return (
         <div className="future-events-container">
-            <TrentoModal isOpen={modalIsOpen} onOk={() => {setModalIsOpen(false)}} onCancel={()=>setModalIsOpen(false)} 
+            <TrentoModal isOpen={modalIsOpen} onOk={handleRevert} onCancel={cancelDelete} 
                 title={'Deseas revertir el margen de resultados'} question={'Estas a punto de cancelar el margen de resultados'} buttonOk={'Concluir'}
                 butttonCancel={'Cancelar'}
             />
