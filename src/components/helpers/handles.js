@@ -70,9 +70,46 @@ const handleResponseWithNumbers = (string) => {
 return formattedString;
 }
 
+const handleFileResponse = async (url, options, filename) => {
+  try {
+    const response = await fetchWithAuth(url, options)
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+      // Convert the response to a Blob
+      const blob = await response.blob();
+
+      // Create a URL for the Blob
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      // Create an anchor element
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+
+      // Append the anchor to the body
+      document.body.appendChild(link);
+
+      // Programmatically click the anchor to trigger the download
+      link.click();
+
+      // Remove the anchor from the body
+      document.body.removeChild(link);
+
+      // Revoke the Blob URL to free up resources
+      window.URL.revokeObjectURL(blobUrl);
+
+      console.log('File downloaded successfully');
+    } catch (error) {
+      console.error('There was an error downloading the file:', error);
+    }
+  };
+
 const isEmptyObject = (obj) => {
   return Object.keys(obj).length === 0;
 };
 
-export { handleChange, handleNumberText, handleFetchResponse, handleSubmit, handleDelete, handleResponseWithNumbers, isEmptyObject };
+export { handleChange, handleNumberText, handleFetchResponse, handleSubmit, handleDelete, handleResponseWithNumbers, isEmptyObject, handleFileResponse };
 

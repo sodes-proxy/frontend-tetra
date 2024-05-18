@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { handleDelete, handleSubmit } from '../helpers/handles';
+import { handleDelete, handleFileResponse, handleSubmit } from '../helpers/handles';
 import './FutureEvents.css';
 import Searcher from './Searcher';
 import { TrentoModal } from '../helpers/modal';
@@ -15,15 +15,18 @@ const FutureEvents = () => {
     const [events, setEvents] = useState([]);
 
     const buttons = [{'className':'payment', 'action':(e) => {setIdEvent(e.id_event)}, 'display':'Revertir', 'state':['completado']},
-        {'className':'edit', 'action':() => {}, 'display':'Descargar', 'state':['cancelado', 'completado']},
+        {'className':'edit', 'action':(e) => {handleDownload(e)}, 'display':'Descargar', 'state':['completado']},
     ]; 
 
       useEffect(() => {
         if (idEvent !== '' && idEvent != undefined) {setModalIsOpen(true); console.log(idEvent)}
       }, [idEvent])
 
-    const handleEvent = (event, url) => {
-        navigate(`/${url}/${event.id_event}`, { state: { event } });
+    const handleDownload = (event) => {
+        handleFileResponse('http://127.0.0.1:8000/finanzas/getMargenResultados', {
+            method: 'OPTIONS', headers: {'Content-Type': 'application/json'}, 
+            body: JSON.stringify({ id_event: event.id_event })
+        }, 'margen.xlsx')
     };
 
     const handleRevert = (e) => {
