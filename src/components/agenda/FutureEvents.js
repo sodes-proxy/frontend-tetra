@@ -44,7 +44,7 @@ const FutureEvents = () => {
     return (
         <div className="future-events-container">
             <DeleteModal isOpen={modalIsOpen} onRequestClose={cancelDelete} onDelete={handleDel}/>
-            <Searcher onClose={onClose} onShow={onShow} buttons={buttons} events={events} setEvents={setEvents} />
+            <Searcher onClose={onClose} onShow={onShow} buttons={buttons} events={events} setEvents={setEvents} state={['pendiente']}/>
         </div>
     );
 };

@@ -29,7 +29,9 @@ const handleFetchResponse  = async (response, onShow, onClose, actionOnSuccess) 
 };
 
 const handleSubmit = (e, url, options, formData, possibleValues, onClose, onShow, actionOnSuccess) => {
-  e.preventDefault();
+  if (e ){
+    e.preventDefault();
+  }
   for (const key in formData) {
     
     const trimmedValue = typeof formData[key] === 'string' ? formData[key].trim() : formData[key];

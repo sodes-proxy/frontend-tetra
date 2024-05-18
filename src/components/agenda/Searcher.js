@@ -3,14 +3,15 @@ import { handleChange } from "../helpers/handles";
 import { getList } from "../helpers/options";
 import { openToast } from "../helpers/toast";
 
-const Searcher = ({onShow, onClose, buttons, events, setEvents}) => {
+const Searcher = ({onShow, onClose, buttons, events, setEvents, state}) => {
     const date = new Date ();
     const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
     const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - 4 + i);
     const [formData, setFormData] = useState({
         location: '',
         year: date.getFullYear(),
-        month: meses[date.getMonth()]
+        month: meses[date.getMonth()],
+        state: state
       });
     const [eventLocations, setEventLocations] = useState([]);
     
@@ -21,8 +22,8 @@ const Searcher = ({onShow, onClose, buttons, events, setEvents}) => {
       };
 
     useEffect(() => {
-        if (isChecked) getEvents({'month':meses.indexOf(formData.month) + 1, 'year':Number.parseInt(formData.year), 'location':formData.location})
-        else getEvents({'month':meses.indexOf(formData.month) + 1, 'year':Number.parseInt(formData.year)})
+        if (isChecked) getEvents({'month':meses.indexOf(formData.month) + 1, 'year':Number.parseInt(formData.year), 'location':formData.location, 'state':formData.state})
+        else getEvents({'month':meses.indexOf(formData.month) + 1, 'year':Number.parseInt(formData.year), 'state':formData.state})
     }, [isChecked, formData]);
 
     useEffect(() => {

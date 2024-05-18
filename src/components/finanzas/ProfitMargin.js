@@ -1,20 +1,24 @@
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState, } from "react";
+import { useNavigate } from 'react-router-dom';
 import Searcher from "../agenda/Searcher";
 import { getList } from "../helpers/options";
-import { handleNumberText, isEmptyObject } from "../helpers/handles";
+import { handleNumberText, handleSubmit, isEmptyObject } from "../helpers/handles";
 import { getValueInNumber, extractNumericValue } from "../helpers/numbers";
 import './ProfitMargin.css';
+import { TrentoModal } from "../helpers/modal";
+
 
 const ProfitMargin = () => {
+    const navigate = useNavigate()
     const [formData, setFormData] = useState({});
-    const [formattedData, setFormattedData] = useState({'state':'Pendiente', 'furniture':'$0'});
+    const [formattedData, setFormattedData] = useState({'furniture':'$0', 'state':'pendiente', 'salonPrice':'$0'});
     const [showToast, setShowToast] = useState(false);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const onShow =  () => { setShowToast(true) };
     const onClose =  () => { setShowToast(false) };
     const [idEvent, setIdEvent] = useState('');
     const [events, setEvents] = useState([]);
-    const [marginProfit, setMarginProfit] = useState({'utility':0});
+    const [marginProfit, setMarginProfit] = useState({'utility':0, 'marginProfit':0, 'cost':0});
 
 
     const getCount = () => {
@@ -54,12 +58,15 @@ const ProfitMargin = () => {
         return suma;
     }
 
-    const getMargin = (price) => {
-        return getSumPayments('payments') / Number.parseFloat(extractNumericValue(price)) * 100;
+    const getMargin = () => {
+        return getUtility() /  getSumOfExpenses() * 100;
+    }
+
+    const getUtility = () => {
+        return getSumPrice(formattedData.price, formattedData.salonPrice) - getSumOfExpenses();
     }
 
     useEffect(() => {
-        formattedData['salonPrice'] = '0'
         if (!isEmptyObject(formData)){
             for (const key in formData) {
                 //console.log(getValueInNumber(formData[key], true))
@@ -79,20 +86,55 @@ const ProfitMargin = () => {
 
     useEffect (() => {
         if (formData.payments && 'payments'+(formData.payments.length-1).toString() in formattedData){
-            setFormattedData(prevState => ({...prevState, ['margin']:getMargin(formattedData.price)}))
-            setMarginProfit(prevState=>({...prevState, ['utility']: Number.parseFloat(extractNumericValue(formattedData['price'])) - getSumOfExpenses()}))
+            setMarginProfit(prevState=>({...prevState, 
+                ['utility']: getUtility(),
+                ['margin']:getMargin(),
+                ['cost']:getSumOfExpenses()
+            }))
         }
     }, [formattedData])
 
+    const handleSetMarginProfit = (e) => {
+        handleSubmit(e, 'http://127.0.0.1:8000/finanzas/guardarEstadosResultados', {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                ...formData,
+                'id_event': idEvent,
+                'salaries': Number.parseFloat(extractNumericValue(formattedData.salaries)),
+                'others': Number.parseFloat(extractNumericValue(formattedData.others)),
+                'furniture': Number.parseFloat(extractNumericValue(formattedData.others)),
+                'salonPrice': Number.parseFloat(extractNumericValue(formattedData.salonPrice)),
+                'utility': marginProfit.utility,
+                'margin': marginProfit.margin,
+                'cost': marginProfit.cost
+            })}, formattedData, ['salaries','furniture','others','salonPrice'], onClose, onShow, () => navigate('/margen-resultados'))
+    }
+
     const buttons = [{'className':'payment', 'action':(e) => {setIdEvent(e.id_event)}, 'display':'Seleccionar'}];
+    
+    const checkPayments = (e) => {
+        e.preventDefault();
+        if (getSumPayments('payments') < getSumPrice(formattedData.price, formattedData.salonPrice)){
+            setModalIsOpen(true)
+        }
+        else {
+            handleSetMarginProfit(e)
+        }
+    }
+    
     return (
         <div className={idEvent === '' ? 'future-events-container' : 'edit-event-container'}>
+            <TrentoModal isOpen={modalIsOpen} onOk={() => {handleSetMarginProfit(undefined); setModalIsOpen(false)}} onCancel={()=>setModalIsOpen(false)} 
+                title={'Deseas concluir evento?'} question={'Los abonos son menores al precio del evento'} buttonOk={'Concluir'}
+                butttonCancel={'Cancelar'}
+            />
             {idEvent === '' ? (
-                <Searcher onClose={onClose} onShow={onShow} buttons={buttons} events={events} setEvents={setEvents} />
+                <Searcher onClose={onClose} onShow={onShow} buttons={buttons} events={events} setEvents={setEvents} state={['pendiente']}/>
             ):
             <React.Fragment>
                 <p>Margen de resultados</p>
-                <form onSubmit={(e)=>{e.preventDefault();}}>
+                <form onSubmit={(e) => checkPayments(e)}>
                 <label>
                     Alimentos
                     <input type="text" name='food' disabled value={formattedData.food}/>
@@ -134,13 +176,13 @@ const ProfitMargin = () => {
                         <p className={formattedData['margin'] >= 100.0 ? 'green-text' : 'red-text'}>{formattedData['margin'] >= 100.0 ? 'Completado' : 'Pendiente'}</p>
                     </span>
                     <span>
-                        Coste del Evento ${getSumOfExpenses().toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                        Coste del Evento ${marginProfit.utility ? marginProfit.cost.toLocaleString(undefined, { maximumFractionDigits: 2 }):null}
                     </span>
                     <span>
                         Utilidad: ${marginProfit.utility ? (marginProfit.utility).toLocaleString(undefined, { maximumFractionDigits: 2 }): null}
                     </span>
                     <span>
-                        Margen: {marginProfit.utility ? formattedData['margin'].toLocaleString(undefined, { maximumFractionDigits: 2 }):null}%
+                        Margen: {marginProfit.utility ? marginProfit.margin.toLocaleString(undefined, { maximumFractionDigits: 2 }):null}%
                     </span>
                     </React.Fragment>
                 )}

@@ -26,4 +26,16 @@ const DeleteModal = ({ isOpen, onRequestClose, onDelete }) => {
     );
 };
 
-export { DeleteModal };
+
+const TrentoModal = ({title, question, buttonOk, butttonCancel, isOpen, onCancel, onOk }) => {
+    return (
+        <Modal isOpen={isOpen} onRequestClose={onCancel} style={customStyles}>
+            <h2>{title}</h2>
+            <p>{question}</p>
+            <button onClick={onOk}>{buttonOk}</button>
+            <button onClick={onCancel}>{butttonCancel}</button>
+        </Modal>
+    );
+};
+
+export { DeleteModal, TrentoModal };
